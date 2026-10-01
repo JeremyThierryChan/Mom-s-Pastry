@@ -220,6 +220,35 @@ function topSesame(cx, baseY, R, kind = 'black') {
 }
 
 /**
+ * 刷在顶上的蛋液。
+ * 真实做法是进炉前在表面刷一层蛋黄液，烤出来顶部是金棕色、油亮的，
+ * 侧面没刷到的地方还是浅米色 —— 所以这里做成一个从上往下淡出的金色渐变，
+ * 叠在酥皮上、压在馅料层下面，于是只有最外那一圈酥皮被染成金色。
+ * 再贴一条很淡的高光弧，表示烤完那点油亮。
+ */
+function eggWash(cx, baseY, R, id) {
+  const topY = baseY - (1 + FLAT) * R;
+
+  // 高光：轮廓顶部的一小段弧（phi 250°~290°，270° 正好是顶点）。
+  // 稍微往里挪一点，免得和酥皮轮廓自己的描边重叠
+  const arc = Array.from({ length: 15 }, (_, i) => {
+    const phi = ((250 + (40 * i) / 14) * Math.PI) / 180;
+    const rr = R * 0.955;
+    return [cx + Math.cos(phi) * rr, baseY - FLAT * R + Math.sin(phi) * rr];
+  });
+  const highlight = arc.map(([x, y], i) => `${i ? 'L' : 'M'} ${r1(x)} ${r1(y)}`).join(' ');
+
+  return `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" y1="${r1(topY)}" x2="0" y2="${r1(baseY)}">
+      <stop offset="0" stop-color="#BE7C33" stop-opacity="0.9"/>
+      <stop offset="0.14" stop-color="#D2974A" stop-opacity="0.72"/>
+      <stop offset="0.42" stop-color="#E6C795" stop-opacity="0.34"/>
+      <stop offset="0.72" stop-color="#EFDCB6" stop-opacity="0"/>
+    </linearGradient>
+    <path d="${cutFacePath(cx, baseY, R)}" fill="url(#${id})"/>
+    <path d="${highlight}" fill="none" stroke="#F7E3B4" stroke-width="${r1(R * 0.02)}" stroke-linecap="round" opacity="0.5"/>`;
+}
+
+/**
  * 一颗切开的蛋黄酥。
  * @param {number} baseY 平底（放在盘子 / 烤盘上那一条）的 y
  * @param {number} R 半宽
@@ -234,6 +263,7 @@ function cutaway(
 ) {
   const [paste, pasteDark, pasteLight] = filling;
   const maskId = `nib-${Math.round(cx)}-${Math.round(baseY)}-${Math.round(R)}`;
+  const washId = `wash-${Math.round(cx)}-${Math.round(baseY)}-${Math.round(R)}`;
   const cyBase = baseY - FLAT * R;
 
   // 轮廓缺口：手切出来的边不会是光滑的。只在侧面和顶部啃，别啃到平底
@@ -268,6 +298,7 @@ function cutaway(
         <path d="${cutFacePath(cx, baseY, R, 1, R * 0.022)}" fill="#D8C09A"/>
         <path d="${cutFacePath(cx, baseY, R)}" fill="#EFDCB6" stroke="#DCC69E" stroke-width="${r1(R * 0.018)}"/>
         <path d="${cutFacePath(cx, baseY, R, SCALE.layer, LIFT.layer * R)}" fill="none" stroke="#E4D0A8" stroke-width="${r1(R * 0.013)}"/>
+        ${eggWash(cx, baseY, R, washId)}
         ${withFloss ? flossRing(cx, baseY, R, seed) : ''}
         <path d="${cutFacePath(cx, baseY, R, SCALE.paste, LIFT.paste * R)}" fill="${paste}" stroke="${pasteDark}" stroke-width="${r1(R * 0.012)}"/>
         ${crumbs}
