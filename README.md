@@ -233,6 +233,10 @@ public/images/
 - 想要别款产品当图标：改 `generate-icons.mjs` 里 `cutawayContent()` 读的那个文件，
   和 `ART_BOX`（该剖面在 1200×900 里的范围）。
 - `.ico` 是脚本手工拼的（ICO 允许直接内嵌 PNG），所以没有引入任何新依赖。
+- 图标 URL 带一个内容哈希（`favicon.ico?v=3e89073f`，构建时算的）。
+  浏览器把 favicon 存在单独的库里，URL 不变就永远用旧的，普通刷新、
+  重开标签页都不一定重新拉 —— 挂了哈希之后，图标一改 URL 就变，必须重新拉。
+  所以换了图标**不用**手动改版本号，`npm run icons && npm run build` 就会自动变。
 
 ### 现在的占位图是怎么画出来的
 

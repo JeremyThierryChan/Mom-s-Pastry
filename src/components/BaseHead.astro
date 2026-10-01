@@ -1,4 +1,7 @@
 ---
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { absoluteUrl, withBase } from '../lib/url';
 
 interface Props {
@@ -47,6 +50,26 @@ const MIME: Record<string, string> = {
 const ogImageType = ext ? MIME[ext] : undefined;
 const ogImageWidth = imageWidth;
 const ogImageHeight = imageHeight;
+
+/**
+ * 图标的缓存比普通资源顽固得多：浏览器把 favicon 存在单独的库里，
+ * 普通刷新、甚至关掉标签页重开，都不一定会重新请求，URL 不变就永远用旧的。
+ * 所以给图标 URL 挂一个内容哈希 —— 图标文件一改，URL 就变，浏览器只能重新拉。
+ */
+function iconVersion(file: string): string {
+  try {
+    return createHash('sha1')
+      .update(readFileSync(resolve(process.cwd(), 'public', file)))
+      .digest('hex')
+      .slice(0, 8);
+  } catch {
+    return '1';
+  }
+}
+
+const icoVersion = iconVersion('favicon.ico');
+const svgVersion = iconVersion('favicon.svg');
+const appleVersion = iconVersion('apple-touch-icon.png');
 ---
 
 <title>{title}</title>
@@ -88,8 +111,9 @@ const ogImageHeight = imageHeight;
 <meta name="twitter:image" content={ogImage} />
 
 <meta name="theme-color" content="#FDFAF4" />
-<!-- 图标：.ico 给老浏览器和微信内置浏览器，svg 给现代浏览器，png 给 iOS 主屏 -->
-<link rel="icon" href={withBase('/favicon.ico')} sizes="32x32" />
-<link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
-<link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+<!-- 图标：.ico 给老浏览器和微信内置浏览器，svg 给现代浏览器，png 给 iOS 主屏。
+     带内容哈希，避免浏览器一直用缓存的旧图标 -->
+<link rel="icon" href={withBase(`/favicon.ico?v=${icoVersion}`)} sizes="32x32" />
+<link rel="icon" href={withBase(`/favicon.svg?v=${svgVersion}`)} type="image/svg+xml" />
+<link rel="apple-touch-icon" href={withBase(`/apple-touch-icon.png?v=${appleVersion}`)} />
 <link rel="sitemap" href={withBase('/sitemap.xml')} />
