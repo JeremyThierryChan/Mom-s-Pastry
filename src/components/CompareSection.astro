@@ -99,14 +99,14 @@ const minWidth = `${(4.5 + products.length * 6.5).toFixed(1)}rem`;
                       const textRow = TEXT_ROWS[row];
                       if (textRow) {
                         return (
-                          <td class="px-1.5 py-3 align-middle text-sm text-cocoa sm:px-2 sm:py-3.5">
+                          <td class="px-1.5 py-3 text-center align-middle text-sm text-cocoa sm:px-2 sm:py-3.5">
                             {textRow(product)}
                           </td>
                         );
                       }
                       const has = hasIngredient(product, row);
                       return (
-                        <td class="px-1.5 py-3 align-middle sm:px-2 sm:py-3.5">
+                        <td class="px-1.5 py-3 text-center align-middle sm:px-2 sm:py-3.5">
                           <span class="sr-only">{has ? '有' : '没有'}</span>
                           {has ? (
                             <span
