@@ -77,6 +77,8 @@ const site = defineCollection({
       title: need('手作记录 › 标题'),
       note: need('手作记录 › 说明'),
       limit: looseNumber('首页显示条数').pipe(z.number().int().positive()),
+      /** 「显示：否」时为 false：内容留着但不显示 */
+      visible: z.boolean(),
     }),
     contact: z.object({
       eyebrow: need('联系 › 小标签'),

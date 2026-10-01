@@ -46,8 +46,15 @@ export function getSite(): Promise<SiteContent> {
   return cached;
 }
 
-/** 手作记录：按日期从新到旧 */
+/**
+ * 手作记录：按日期从新到旧。
+ * 如果 网站内容.md 里写了「显示：否」，这里返回空数组 ——
+ * 内容还在文件里，只是首页不显示、详情页也不生成。
+ */
 export async function getJournal(): Promise<JournalEntry[]> {
+  const site = await getSite();
+  if (!site.journal.visible) return [];
+
   const entries = await getCollection('journal');
   return entries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
@@ -60,15 +67,21 @@ export function journalHref(entry: JournalEntry): string {
 /**
  * 导航栏跟着各区块的「小标签」走：
  * 在 网站内容.md 里把小标签改成别的，导航上的字也会跟着变。
+ * 被隐藏的区块不会出现在导航里（否则会跳到不存在的锚点）。
  */
 export function navLinks(site: SiteContent): NavLink[] {
-  return [
+  const links: NavLink[] = [
     { label: '首页', href: '/', hash: '' },
     { label: site.products.eyebrow, href: '/#today', hash: '#today' },
     { label: site.about.eyebrow, href: '/#about', hash: '#about' },
-    { label: site.journal.eyebrow, href: '/#journal', hash: '#journal' },
-    { label: site.contact.eyebrow, href: '/#contact', hash: '#contact' },
   ];
+
+  if (site.journal.visible) {
+    links.push({ label: site.journal.eyebrow, href: '/#journal', hash: '#journal' });
+  }
+
+  links.push({ label: site.contact.eyebrow, href: '/#contact', hash: '#contact' });
+  return links;
 }
 
 export type StatusTone = 'available' | 'limited' | 'soldout';

@@ -50,6 +50,7 @@ const KNOWN_KEYS = new Set([
   '状态',
   '小备注',
   // 手作记录
+  '显示',
   '日期',
   '链接',
   '摘要',
@@ -176,6 +177,20 @@ function f(block: Block, key: string): string {
   return block.fields[key] ?? '';
 }
 
+/**
+ * 「是 / 否」这类中文开关。写别的、或者不写，都按 fallback 走。
+ * 用在「显示：否」这种地方 —— 内容留着，只是先不显示。
+ */
+function toBool(value: string, fallback: boolean): boolean {
+  const v = value.trim().toLowerCase();
+  if (!v) return fallback;
+  if (['否', '不', '不是', '不要', '隐藏', '关闭', 'no', 'false', 'off', '0'].includes(v)) {
+    return false;
+  }
+  if (['是', '好', '要', '显示', '打开', 'yes', 'true', 'on', '1'].includes(v)) return true;
+  return fallback;
+}
+
 /** 网址片段：转小写、空格换横线、去掉奇怪的符号 */
 export function toSlug(value: string): string {
   return value
@@ -294,6 +309,8 @@ export function siteContentLoader(): Loader {
             title: f(journal, '标题'),
             note: f(journal, '说明'),
             limit: f(journal, '首页显示条数') || '3',
+            // 「显示：否」= 内容留着但不显示（首页不出现、也不生成详情页）
+            visible: toBool(f(journal, '显示'), true),
           },
           contact: {
             eyebrow: f(contact, '小标签'),

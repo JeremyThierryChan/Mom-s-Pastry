@@ -43,18 +43,24 @@ const jsonLd = {
 
   <AboutSection about={site.about} />
 
-  <section id="journal" class="section border-y border-line bg-sand/50">
-    <div class="wrap">
-      <SectionHeading
-        eyebrow={site.journal.eyebrow}
-        title={site.journal.title}
-        note={site.journal.note}
-      />
-      <ul class="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-6 md:mt-12 lg:grid-cols-3">
-        {journal.map((entry) => <JournalCard entry={entry} />)}
-      </ul>
-    </div>
-  </section>
+  {
+    site.journal.visible && (
+      <section id="journal" class="section border-y border-line bg-sand/50">
+        <div class="wrap">
+          <SectionHeading
+            eyebrow={site.journal.eyebrow}
+            title={site.journal.title}
+            note={site.journal.note}
+          />
+          <ul class="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-6 md:mt-12 lg:grid-cols-3">
+            {journal.map((entry) => (
+              <JournalCard entry={entry} />
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 
   <ContactSection contact={site.contact} />
 </BaseLayout>
