@@ -224,7 +224,8 @@ public/images/
 | `public/favicon.svg` | 浏览器标签页图标（现代浏览器） |
 | `public/favicon.ico` | 老浏览器、微信内置浏览器；内含 16 / 32 / 48 三个尺寸 |
 | `public/apple-touch-icon.png` | iOS「添加到主屏幕」用的 180×180 |
-| `public/images/hero/og.png` | 社交分享图，1200×630，从 `og.svg` 渲染 |
+| `public/images/hero/og-square.png` | **卡片分享用**，1200×1200 方形，经典蛋黄酥的切面 |
+| `public/images/hero/og.png` | 横版分享图 1200×630，从 `og.svg` 渲染（保留备用） |
 
 - 图标**直接取自产品卡里那张「笑笑经典蛋黄酥」的剖面图**
   （`public/images/products/classic.svg`），所以产品图改了图标也会跟着变。
@@ -233,6 +234,13 @@ public/images/
 - 想要别款产品当图标：改 `generate-icons.mjs` 里 `cutawayContent()` 读的那个文件，
   和 `ART_BOX`（该剖面在 1200×900 里的范围）。
 - `.ico` 是脚本手工拼的（ICO 允许直接内嵌 PNG），所以没有引入任何新依赖。
+- **分享图为什么是方的**：卡片分享时平台会把图裁成方形，拿 1200×630 的横图去裁，
+  主体会被切掉。所以单独出了一张 1200×1200 的方图，切面占边长 74%
+  （留边比图标多一点，免得平台再裁边时切到酥皮）。
+  想换回横图：把 `网站内容.md` 里的 `分享图：` 改回 `/images/hero/og.png`，
+  同时把 `BaseHead.astro` 的 `twitter:card` 改回 `summary_large_image`。
+- `og:image:width` / `height` 是**构建时从图片文件头自动读的**（PNG 和 JPEG 都支持），
+  所以换分享图不用手动改尺寸，写错了会裁歪的问题也一并避免。
 - 图标 URL 带一个内容哈希（`favicon.ico?v=3e89073f`，构建时算的）。
   浏览器把 favicon 存在单独的库里，URL 不变就永远用旧的，普通刷新、
   重开标签页都不一定重新拉 —— 挂了哈希之后，图标一改 URL 就变，必须重新拉。

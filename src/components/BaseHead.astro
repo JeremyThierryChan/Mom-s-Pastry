@@ -48,8 +48,44 @@ const MIME: Record<string, string> = {
   svg: 'image/svg+xml',
 };
 const ogImageType = ext ? MIME[ext] : undefined;
-const ogImageWidth = imageWidth;
-const ogImageHeight = imageHeight;
+
+/**
+ * 从 PNG / JPEG 的文件头读出真实尺寸，自动填 og:image:width / height。
+ * 平台靠这两个值决定怎么裁卡片，写错了（比如方图标成横图）会裁歪。
+ * 读不到就退回传进来的默认值。
+ */
+function imageSize(path: string): { width: number; height: number } | null {
+  try {
+    const buf = readFileSync(resolve(process.cwd(), 'public', path.replace(/^\//, '')));
+    // PNG：IHDR 里的宽高
+    if (buf.length > 24 && buf.toString('ascii', 1, 4) === 'PNG') {
+      return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+    }
+    // JPEG：扫到 SOFn 段
+    if (buf[0] === 0xff && buf[1] === 0xd8) {
+      let i = 2;
+      while (i < buf.length - 9) {
+        if (buf[i] !== 0xff) {
+          i += 1;
+          continue;
+        }
+        const marker = buf[i + 1];
+        const len = buf.readUInt16BE(i + 2);
+        const isSofn =
+          marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc;
+        if (isSofn) return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) };
+        i += 2 + len;
+      }
+    }
+  } catch {
+    // 文件不在 public 下（例如线上外链图片），用默认值
+  }
+  return null;
+}
+
+const detected = imageSize(image);
+const ogImageWidth = detected?.width ?? imageWidth;
+const ogImageHeight = detected?.height ?? imageHeight;
 
 /**
  * 图标的缓存比普通资源顽固得多：浏览器把 favicon 存在单独的库里，
@@ -104,8 +140,9 @@ const appleVersion = iconVersion('apple-touch-icon.png');
 <meta property="og:image:alt" content={imageAlt} />
 {publishedTime && <meta property="article:published_time" content={publishedTime} />}
 
-<!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image" />
+<!-- Twitter：summary 对应方形图（1:1），summary_large_image 对应 1.91:1 横图。
+     分享图是方的，所以用 summary，否则会被加黑边。 -->
+<meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
