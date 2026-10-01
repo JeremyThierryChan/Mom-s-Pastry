@@ -272,6 +272,19 @@ public/images/
 
 ---
 
+### 部署后页面「错位」/ 没样式？
+
+先 `Cmd+Shift+R` 强刷，通常就好了。原因：
+
+GitHub Pages 给 HTML 设了 `cache-control: max-age=600`（缓存 10 分钟），
+而构建产物里的 CSS 文件名带哈希、每次部署都会换、旧的会被删掉。
+所以「浏览器还在用缓存的旧 HTML」+「旧 CSS 已被删除」= 页面完全没样式。
+
+已经通过 `astro.config.mjs` 里的 `build.inlineStylesheets: 'always'`
+把 CSS 内联进 HTML，旧 HTML 也能自带样式、不会散架。
+但如果那次改动**换了图片文件名**，缓存的旧 HTML 仍会指向已删除的旧图 → 图片裂掉。
+这种情况等 10 分钟，或者强刷 / 换个地址（`?v=2`）/ 无痕窗口。
+
 ## 五、部署到 GitHub Pages
 
 仓库：<https://github.com/JeremyThierryChan/Mom-s-Pastry>，分支 `main`。

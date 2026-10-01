@@ -17,6 +17,13 @@ export default defineConfig({
   build: {
     // 静态生成，产物在 dist/，可以直接扔到任意静态托管
     format: 'directory',
+    // CSS 直接内联进 HTML，不生成外链的 .css 文件。
+    // 原因：GitHub Pages 给 HTML 设了 cache-control: max-age=600，
+    // 而构建产物里的 CSS 文件名带哈希、每次部署都会换。
+    // 于是「浏览器还在用缓存的旧 HTML + 旧 CSS 已被删除」= 页面完全没样式，
+    // 用户看到的就是一片错位。内联之后旧 HTML 依然自带样式，不会散架。
+    // 全站 CSS 只有 22KB，内联的代价可以接受。
+    inlineStylesheets: 'always',
   },
   vite: {
     plugins: [tailwindcss()],
