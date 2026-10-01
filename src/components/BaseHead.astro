@@ -54,6 +54,19 @@ const ogImageHeight = imageHeight;
 <link rel="canonical" href={canonical} />
 {noindex && <meta name="robots" content="noindex, follow" />}
 
+<script is:inline>
+  // 刷新后回到页顶，而不是停在浏览器「记住」的上次滚动位置。
+  // 默认行为会让用户刷新时突然落到「关于笑笑」这类页面下半部分，
+  // 单页落地页这样很别扭。
+  //
+  // 只在不带锚点时才接管：网址里如果有 #contact 这种锚点，
+  // 就保持浏览器默认行为，刷新后仍然停在那个区块
+  // （manual 模式会把「跳到锚点」也一起关掉，所以要区别对待）。
+  if (!location.hash && 'scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+</script>
+
 <!-- Open Graph -->
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={siteName} />
