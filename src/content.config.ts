@@ -65,6 +65,13 @@ const site = defineCollection({
         }),
       ),
     }),
+    booking: z.object({
+      eyebrow: need('预订须知 › 小标签'),
+      title: need('预订须知 › 标题'),
+      html: z.string(),
+      /** 「显示：否」时为 false */
+      visible: z.boolean(),
+    }),
     about: z.object({
       eyebrow: need('关于笑笑 › 小标签'),
       title: need('关于笑笑 › 标题'),

@@ -1,0 +1,20 @@
+---
+import type { SiteContent } from '../lib/content';
+
+interface Props {
+  booking: SiteContent['booking'];
+}
+
+const { booking } = Astro.props;
+---
+
+<section id="booking" class="section">
+  <div class="wrap">
+    <div class="card mx-auto max-w-3xl px-6 py-10 sm:px-10 sm:py-12">
+      <p class="eyebrow">{booking.eyebrow}</p>
+      <h2 class="section-title mt-4">{booking.title}</h2>
+      <!-- 规则来自「网站内容.md › 预订须知」，是按 Markdown 渲染好的 -->
+      <div class="prose-handmade mt-6" set:html={booking.html} />
+    </div>
+  </div>
+</section>

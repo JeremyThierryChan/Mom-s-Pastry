@@ -76,6 +76,14 @@ export interface Block {
 /** 「键：值」行；键不能含冒号，且不超过 14 个字 */
 const FIELD_RE = /^([^：:]{1,14})[：:]\s*(.*)$/;
 
+/**
+ * 「看起来像字段名」的样子：中文或字母开头，只含中英文数字，短。
+ * 用来区分两种情况：
+ *   - `名字：笑笑的蛋黄酥` → 像是把字段名写错了（警告）
+ *   - `- **每天 16:00 截单。** ...` → 正文里的冒号（当成正文，别乱警告、更不能丢）
+ */
+const PLAUSIBLE_KEY_RE = /^[\u4e00-\u9fa5A-Za-z][\u4e00-\u9fa5A-Za-z0-9]{0,9}$/;
+
 /** 把整个文件解析成 区块 → 条目 */
 function parseContent(
   raw: string,
@@ -141,17 +149,21 @@ function parseContent(
           target.fields[key] = field[2].trim();
           continue;
         }
-        // 名字写错时只警告、不当成「正文开始」——
+        // 只处理「看起来像字段名」的情况（比如把「名称」写成「名字」）：
+        // 警告一下、跳过这一行，但**继续按字段区解析** ——
         // 否则一个错别字会把它下面的所有字段都吞进正文，报出一堆假错误
-        if (shouldWarn(section.name)) {
-          warn(
-            `${CONTENT_PATH}：「${key}：」不是能识别的字段名（在「${target.name}」里），这一行被忽略了。` +
-              `检查一下是不是打错字了？`,
-          );
+        if (PLAUSIBLE_KEY_RE.test(key)) {
+          if (shouldWarn(section.name)) {
+            warn(
+              `${CONTENT_PATH}：「${key}：」不是能识别的字段名（在「${target.name}」里），这一行被忽略了。` +
+                `检查一下是不是打错字了？`,
+            );
+          }
+          continue;
         }
-        continue;
+        // 不像字段名（例如正文里的「- **每天 16:00 截单」）→ 当成正文，不能丢
       }
-      bodyStarted = true; // 第一个不像字段的行 = 正文开始，后面的「键：值」也不再解析
+      bodyStarted = true; // 到这里就是正文开始了，后面的「键：值」也不再解析
     }
 
     bodyLines.push(line);
@@ -251,14 +263,16 @@ export function siteContentLoader(): Loader {
       const brand = readSection(sections, '品牌');
       const hero = readSection(sections, '首页');
       const products = readSection(sections, '今日手作');
+      const booking = readSection(sections, '预订须知');
       const about = readSection(sections, '关于笑笑');
       const journal = readSection(sections, '手作记录');
       const contact = readSection(sections, '联系');
       const footer = readSection(sections, '页脚');
 
-      const aboutHtml = about.body
-        ? (await ctx.renderMarkdown(about.body, { fileURL: CONTENT_URL })).html
-        : '';
+      const renderBody = async (block: Block) =>
+        block.body ? (await ctx.renderMarkdown(block.body, { fileURL: CONTENT_URL })).html : '';
+
+      const aboutHtml = await renderBody(about);
 
       const data = await ctx.parseData({
         id: 'index',
@@ -296,6 +310,12 @@ export function siteContentLoader(): Loader {
               imageAlt: f(entry, '图片描述'),
               note: f(entry, '小备注'),
             })),
+          },
+          booking: {
+            eyebrow: f(booking, '小标签'),
+            title: f(booking, '标题'),
+            html: await renderBody(booking),
+            visible: toBool(f(booking, '显示'), true),
           },
           about: {
             eyebrow: f(about, '小标签'),

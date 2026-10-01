@@ -294,6 +294,15 @@
     list-style: disc;
   }
 
+  /* 规则列表：条目之间留一点距离，读起来清楚 */
+  .prose-handmade li + li {
+    margin-top: 0.5em;
+  }
+
+  .prose-handmade li::marker {
+    color: var(--color-yolk);
+  }
+
   .prose-handmade ol {
     list-style: decimal;
   }

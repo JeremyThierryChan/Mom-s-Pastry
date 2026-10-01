@@ -1,5 +1,6 @@
 ---
 import AboutSection from '../components/AboutSection.astro';
+import BookingSection from '../components/BookingSection.astro';
 import ContactSection from '../components/ContactSection.astro';
 import Hero from '../components/Hero.astro';
 import JournalCard from '../components/JournalCard.astro';
@@ -41,8 +42,9 @@ const jsonLd = {
     </div>
   </section>
 
-  <AboutSection about={site.about} />
+  {site.booking.visible && <BookingSection booking={site.booking} />}
 
+  <AboutSection about={site.about} />
   {
     site.journal.visible && (
       <section id="journal" class="section border-y border-line bg-sand/50">
