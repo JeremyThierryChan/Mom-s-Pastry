@@ -12,6 +12,20 @@ import { journalContentLoader, siteContentLoader } from './loaders/site-content'
 const need = (label: string) =>
   z.string().min(1, `「${label}」不能为空 —— 请打开 网站内容.md 补上这一行`);
 
+/**
+ * 数字字段，但写宽一点：48、48元、¥48、48 块、48.5 都能认。
+ * 中文语境下「价格：12元」是最自然的写法，不该因此报错。
+ */
+const looseNumber = (label: string) =>
+  z.preprocess(
+    (value) => {
+      if (typeof value !== 'string') return value;
+      const matched = value.replace(/[,，\s]/g, '').match(/-?\d+(\.\d+)?/);
+      return matched ? Number(matched[0]) : value;
+    },
+    z.number({ error: `「${label}」要写数字，例如 48（写「48元」也可以）` }),
+  );
+
 const site = defineCollection({
   loader: siteContentLoader(),
   schema: z.object({
@@ -42,7 +56,7 @@ const site = defineCollection({
         z.object({
           name: z.string(),
           description: need('一句话描述'),
-          price: z.coerce.number({ error: '「价格」要写数字，例如 48' }),
+          price: looseNumber('价格'),
           unit: need('规格'),
           status: need('状态'),
           image: need('图片'),
@@ -62,7 +76,7 @@ const site = defineCollection({
       eyebrow: need('手作记录 › 小标签'),
       title: need('手作记录 › 标题'),
       note: need('手作记录 › 说明'),
-      limit: z.coerce.number({ error: '「首页显示条数」要写数字，例如 3' }).int().positive(),
+      limit: looseNumber('首页显示条数').pipe(z.number().int().positive()),
     }),
     contact: z.object({
       eyebrow: need('联系 › 小标签'),

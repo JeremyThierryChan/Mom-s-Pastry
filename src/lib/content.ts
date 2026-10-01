@@ -33,7 +33,13 @@ export function getSite(): Promise<SiteContent> {
   cached ??= (async () => {
     const entry = await getEntry('site', 'index');
     if (!entry) {
-      throw new Error('读不到站点内容：请确认仓库根目录存在「网站内容.md」');
+      // 走到这里几乎都是「某个字段没通过校验」，而不是文件不存在
+      // （文件真的不存在时，loader 早就抛出读取错误了）
+      throw new Error(
+        '读不到站点内容。最常见的原因是「网站内容.md」里有字段写错了：请看终端里 ' +
+          '[InvalidContentEntryDataError] 那几行，它会指出是哪个产品、哪个字段。' +
+          '改好保存后会自动恢复，不用重启。',
+      );
     }
     return entry.data;
   })();

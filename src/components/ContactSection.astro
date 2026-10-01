@@ -6,6 +6,9 @@ interface Props {
 }
 
 const { contact } = Astro.props;
+
+// 电话可以写成 138-6853-0992 或带空格，但 tel: 链接里只留数字和开头的 +
+const telHref = `tel:${contact.phone.replace(/[^\d+]/g, '')}`;
 ---
 
 <section id="contact" class="section">
@@ -26,7 +29,7 @@ const { contact } = Astro.props;
         >
           {contact.ctaLabel}
         </button>
-        <a class="btn btn-ghost" href={`tel:${contact.phone}`}>{contact.ctaSecondaryLabel}</a>
+        <a class="btn btn-ghost" href={telHref}>{contact.ctaSecondaryLabel}</a>
       </div>
 
       <dl
