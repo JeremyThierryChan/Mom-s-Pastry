@@ -56,7 +56,9 @@ const minWidth = `${(4.5 + products.length * 6.5).toFixed(1)}rem`;
               注意别用负边距做「整屏出血」——那样会让 html 的 scrollWidth 虚高，
               某些手机浏览器上会出现横向抖动。 */}
           <div class="overflow-x-auto">
-            <table class="w-full border-collapse text-left" style={`min-width: ${minWidth}`}>
+            {/* table-fixed：列宽不由内容决定，否则产品名越长那一列越宽，
+                五张缩略图就会大小不一。固定布局下所有产品列等宽 */}
+            <table class="w-full table-fixed border-collapse text-left" style={`min-width: ${minWidth}`}>
               <caption class="sr-only">{compare.title}</caption>
 
               <thead>
