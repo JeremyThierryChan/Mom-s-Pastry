@@ -13,7 +13,7 @@ const { title, date, summary, image, imageAlt } = entry.data;
 ---
 
 <li class="card flex flex-col overflow-hidden transition-shadow hover:shadow-lift">
-  <a href={withBase(journalHref(entry.id))} class="flex h-full flex-col">
+  <a href={withBase(journalHref(entry))} class="flex h-full flex-col">
     {
       image && (
         <Photo

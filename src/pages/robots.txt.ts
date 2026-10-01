@@ -1,12 +1,12 @@
 import type { APIRoute } from 'astro';
-import { SITE } from '../consts';
 import { absoluteUrl } from '../lib/url';
 
-export const GET: APIRoute = () => {
+export const GET: APIRoute = ({ site }) => {
+  const origin = site ?? new URL('http://localhost:4321');
   const body = `User-agent: *
 Allow: /
 
-Sitemap: ${absoluteUrl('/sitemap.xml', SITE.url)}
+Sitemap: ${absoluteUrl('/sitemap.xml', origin)}
 `;
 
   return new Response(body, {

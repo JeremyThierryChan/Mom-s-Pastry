@@ -1,48 +1,98 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
-import { glob } from 'astro/loaders';
+import { journalContentLoader, siteContentLoader } from './loaders/site-content';
 
 /**
- * 产品集合。
- * 以后加新品 = 在 src/content/products/ 里新增一个 .md 文件，不需要改任何组件。
+ * 内容全部来自仓库根目录的「网站内容.md」，由 src/loaders/site-content.ts 解析。
+ * 这里只负责校验：字段写漏了、写错了，会在 npm run dev / npm run build 的时候
+ * 直接报出来，报错信息尽量说人话，告诉你缺的是哪一行。
  */
-const products = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/products' }),
+
+/** 必填的文本字段 */
+const need = (label: string) =>
+  z.string().min(1, `「${label}」不能为空 —— 请打开 网站内容.md 补上这一行`);
+
+const site = defineCollection({
+  loader: siteContentLoader(),
   schema: z.object({
-    name: z.string(),
-    description: z.string(),
-    /** 价格，单位：元 */
-    price: z.number().nonnegative(),
-    /** 规格，例如「6枚」 */
-    unit: z.string(),
-    status: z.enum(['available', 'limited', 'soldout']),
-    /** public/ 下的图片路径，例如 /images/products/original.svg */
-    image: z.string(),
-    imageAlt: z.string(),
-    /** 卡片上的一句小备注，可选 */
-    note: z.string().optional(),
-    /** 排序，数字越小越靠前 */
-    order: z.number().default(99),
-    /** 以后做商详页时可以直接用；现在先留着 */
-    draft: z.boolean().default(false),
+    brand: z.object({
+      name: need('品牌 › 名称'),
+      intro: need('品牌 › 一句话介绍'),
+      pageTitle: need('品牌 › 网页标题'),
+      pageDescription: need('品牌 › 网页描述'),
+      ogImage: need('品牌 › 分享图'),
+      ogImageAlt: need('品牌 › 分享图说明'),
+    }),
+    hero: z.object({
+      eyebrow: need('首页 › 小标签'),
+      title: need('首页 › 主标题'),
+      subtitle: need('首页 › 副标题'),
+      intro: need('首页 › 介绍'),
+      ctaLabel: need('首页 › 按钮'),
+      ctaSecondaryLabel: need('首页 › 按钮二'),
+      image: need('首页 › 图片'),
+      imageAlt: need('首页 › 图片描述'),
+    }),
+    products: z.object({
+      eyebrow: need('今日手作 › 小标签'),
+      title: need('今日手作 › 标题'),
+      note: need('今日手作 › 说明'),
+      // 允许一个产品都没有（比如放假了），页面会显示一句友好的提示
+      items: z.array(
+        z.object({
+          name: z.string(),
+          description: need('一句话描述'),
+          price: z.coerce.number({ error: '「价格」要写数字，例如 48' }),
+          unit: need('规格'),
+          status: need('状态'),
+          image: need('图片'),
+          imageAlt: need('图片描述'),
+          note: z.string().optional(),
+        }),
+      ),
+    }),
+    about: z.object({
+      eyebrow: need('关于笑笑 › 小标签'),
+      title: need('关于笑笑 › 标题'),
+      image: need('关于笑笑 › 图片'),
+      imageAlt: need('关于笑笑 › 图片描述'),
+      html: z.string(),
+    }),
+    journal: z.object({
+      eyebrow: need('手作记录 › 小标签'),
+      title: need('手作记录 › 标题'),
+      note: need('手作记录 › 说明'),
+      limit: z.coerce.number({ error: '「首页显示条数」要写数字，例如 3' }).int().positive(),
+    }),
+    contact: z.object({
+      eyebrow: need('联系 › 小标签'),
+      title: need('联系 › 标题'),
+      intro: need('联系 › 说明'),
+      hours: need('联系 › 营业说明'),
+      wechat: need('联系 › 微信'),
+      phone: need('联系 › 电话'),
+      ctaLabel: need('联系 › 按钮'),
+      ctaSecondaryLabel: need('联系 › 按钮二'),
+      note: need('联系 › 补充说明'),
+    }),
+    footer: z.object({
+      copyright: need('页脚 › 版权'),
+      note: need('页脚 › 说明'),
+    }),
   }),
 });
 
-/**
- * 手作记录集合。
- * 文件名建议用 日期-slug.md，路由里会自动去掉日期前缀，
- * 例如 2026-10-01-first-batch.md → /journal/first-batch/
- */
 const journal = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/journal' }),
+  loader: journalContentLoader(),
   schema: z.object({
     title: z.string(),
-    date: z.coerce.date(),
-    summary: z.string(),
+    /** 网址片段，来自「链接：」，没写就用日期 */
+    slug: z.string(),
+    date: z.coerce.date({ error: '「日期」要写成 2026-10-01 这样' }),
+    summary: need('摘要'),
     image: z.string().optional(),
     imageAlt: z.string().optional(),
-    draft: z.boolean().default(false),
   }),
 });
 
-export const collections = { products, journal };
+export const collections = { site, journal };

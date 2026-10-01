@@ -19,6 +19,6 @@ export function withBase(path: string): string {
 }
 
 /** 拼成绝对地址，用于 canonical / og:url / sitemap */
-export function absoluteUrl(path: string, site: string): string {
+export function absoluteUrl(path: string, site: string | URL): string {
   return new URL(withBase(path), site).href;
 }

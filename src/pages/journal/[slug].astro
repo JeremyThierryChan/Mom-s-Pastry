@@ -3,15 +3,14 @@ import { render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Photo from '../../components/Photo.astro';
-import { SITE } from '../../consts';
-import { getJournal, journalHref, journalSlug, type JournalEntry } from '../../lib/content';
+import { getJournal, getSite, journalHref, type JournalEntry } from '../../lib/content';
 import { formatDate, isoDate } from '../../lib/format';
 import { withBase } from '../../lib/url';
 
 export const getStaticPaths = (async () => {
   const entries = await getJournal();
   return entries.map((entry) => ({
-    params: { slug: journalSlug(entry.id) },
+    params: { slug: entry.data.slug },
     props: { entry },
   }));
 }) satisfies GetStaticPaths;
@@ -21,6 +20,7 @@ interface Props {
 }
 
 const { entry } = Astro.props;
+const site = await getSite();
 const { title, date, summary, image, imageAlt } = entry.data;
 const { Content } = await render(entry);
 
@@ -31,9 +31,10 @@ const older = index >= 0 && index < all.length - 1 ? all[index + 1] : undefined;
 ---
 
 <BaseLayout
-  title={`${title}｜${SITE.name}`}
+  title={`${title}｜${site.brand.name}`}
   description={summary}
   image={image}
+  imageAlt={imageAlt ?? title}
   type="article"
   publishedTime={date.toISOString()}
 >
@@ -63,25 +64,28 @@ const older = index >= 0 && index < all.length - 1 ? all[index + 1] : undefined;
       <nav class="mt-14 grid gap-4 border-t border-line pt-8 sm:grid-cols-2" aria-label="上下篇">
         {
           newer ? (
-            <a class="card p-5 transition-shadow hover:shadow-lift" href={withBase(journalHref(newer.id))}>
+            <a
+              class="card p-5 transition-shadow hover:shadow-lift"
+              href={withBase(journalHref(newer))}
+            >
               <span class="text-xs text-clay">更新的记录</span>
               <span class="mt-2 block font-serif text-base text-ink">{newer.data.title}</span>
             </a>
           ) : (
-            <span></span>
+            <span />
           )
         }
         {
           older ? (
             <a
               class="card p-5 transition-shadow hover:shadow-lift sm:text-right"
-              href={withBase(journalHref(older.id))}
+              href={withBase(journalHref(older))}
             >
               <span class="text-xs text-clay">更早的记录</span>
               <span class="mt-2 block font-serif text-base text-ink">{older.data.title}</span>
             </a>
           ) : (
-            <span></span>
+            <span />
           )
         }
       </nav>

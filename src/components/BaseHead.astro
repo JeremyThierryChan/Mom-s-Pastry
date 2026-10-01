@@ -1,29 +1,33 @@
 ---
-import { SITE } from '../consts';
 import { absoluteUrl, withBase } from '../lib/url';
 
 interface Props {
-  title?: string;
-  description?: string;
-  image?: string;
-  imageAlt?: string;
+  /** 站点名，用于 og:site_name */
+  siteName: string;
+  title: string;
+  description: string;
+  image: string;
+  imageAlt: string;
   type?: 'website' | 'article';
   publishedTime?: string;
   noindex?: boolean;
 }
 
 const {
-  title = SITE.title,
-  description = SITE.description,
-  image = SITE.ogImage,
-  imageAlt = SITE.ogImageAlt,
+  siteName,
+  title,
+  description,
+  image,
+  imageAlt,
   type = 'website',
   publishedTime,
   noindex = false,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url).href;
-const ogImage = absoluteUrl(image, SITE.url);
+// Astro.site 来自 astro.config.mjs 里的 site，改域名只需要改那一处
+const origin = Astro.site ?? new URL('http://localhost:4321');
+const canonical = new URL(Astro.url.pathname, origin).href;
+const ogImage = absoluteUrl(image, origin.href);
 const ogImageType = image.endsWith('.svg') ? 'image/svg+xml' : undefined;
 ---
 
@@ -34,7 +38,7 @@ const ogImageType = image.endsWith('.svg') ? 'image/svg+xml' : undefined;
 
 <!-- Open Graph -->
 <meta property="og:type" content={type} />
-<meta property="og:site_name" content={SITE.name} />
+<meta property="og:site_name" content={siteName} />
 <meta property="og:locale" content="zh_CN" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
@@ -50,6 +54,6 @@ const ogImageType = image.endsWith('.svg') ? 'image/svg+xml' : undefined;
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
 
-<meta name="theme-color" content={SITE.themeColor} />
+<meta name="theme-color" content="#FDFAF4" />
 <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
 <link rel="sitemap" href={withBase('/sitemap.xml')} />

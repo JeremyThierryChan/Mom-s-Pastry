@@ -1,27 +1,32 @@
 ---
-import { SITE } from '../consts';
+import type { SiteContent } from '../lib/content';
 import Photo from './Photo.astro';
+
+interface Props {
+  site: SiteContent;
+}
+
+const { site } = Astro.props;
+const hero = site.hero;
 ---
 
 <section class="pt-10 pb-2 sm:pt-14 md:pt-20">
   <div class="wrap">
     <div class="max-w-2xl">
-      <p class="eyebrow">手作 · 小批量 · 当天现做</p>
-      <h1 class="display-title mt-5">{SITE.name}</h1>
-      <p class="mt-4 font-serif text-lg text-clay sm:text-xl">{SITE.tagline}</p>
-      <p class="mt-6 max-w-xl text-base leading-relaxed sm:text-lg">
-        从一颗蛋黄酥开始，慢慢做，认真做。
-      </p>
+      <p class="eyebrow">{hero.eyebrow}</p>
+      <h1 class="display-title mt-5">{hero.title}</h1>
+      <p class="mt-4 font-serif text-lg text-clay sm:text-xl">{hero.subtitle}</p>
+      <p class="mt-6 max-w-xl text-base leading-relaxed sm:text-lg">{hero.intro}</p>
       <div class="mt-8 flex flex-wrap items-center gap-3">
-        <a class="btn btn-primary" href="#today">看看今天有什么</a>
-        <a class="btn btn-ghost" href="#about">关于笑笑</a>
+        <a class="btn btn-primary" href="#today">{hero.ctaLabel}</a>
+        <a class="btn btn-ghost" href="#about">{hero.ctaSecondaryLabel}</a>
       </div>
     </div>
 
     <div class="mt-10 md:mt-14">
       <Photo
-        src="/images/hero/hero.svg"
-        alt="刚出炉的手工蛋黄酥，摆在小盘子里"
+        src={hero.image}
+        alt={hero.imageAlt}
         aspect="aspect-[4/3] md:aspect-[16/9]"
         loading="eager"
       />

@@ -1,9 +1,14 @@
 ---
-import { NAV_LINKS, SITE } from '../consts';
+import { navLinks, type SiteContent } from '../lib/content';
 import { withBase } from '../lib/url';
 
+interface Props {
+  site: SiteContent;
+}
+
+const { site } = Astro.props;
 const year = new Date().getFullYear();
-const links = NAV_LINKS.filter((link) => link.hash !== '');
+const links = navLinks(site).filter((link) => link.hash !== '');
 ---
 
 <footer class="border-t border-line bg-sand/60">
@@ -12,9 +17,9 @@ const links = NAV_LINKS.filter((link) => link.hash !== '');
       <div>
         <p class="flex items-center gap-2 font-serif text-lg text-ink">
           <span class="h-2.5 w-2.5 rounded-full bg-yolk" aria-hidden="true"></span>
-          {SITE.name}
+          {site.brand.name}
         </p>
-        <p class="mt-2 text-sm text-clay">{SITE.tagline}</p>
+        <p class="mt-2 text-sm text-clay">{site.brand.intro}</p>
       </div>
 
       <nav aria-label="页脚导航">
@@ -33,7 +38,7 @@ const links = NAV_LINKS.filter((link) => link.hash !== '');
     </div>
 
     <p class="mt-10 border-t border-line pt-6 text-xs text-clay">
-      © {year} {SITE.name}　·　手作小铺，每天做的不多，卖完就收工。
+      © {year} {site.footer.copyright}　·　{site.footer.note}
     </p>
   </div>
 </footer>

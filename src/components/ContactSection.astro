@@ -1,26 +1,32 @@
 ---
-import { CONTACT, SITE } from '../consts';
+import type { SiteContent } from '../lib/content';
+
+interface Props {
+  contact: SiteContent['contact'];
+}
+
+const { contact } = Astro.props;
 ---
 
 <section id="contact" class="section">
   <div class="wrap">
     <div class="card mx-auto max-w-3xl px-6 py-10 text-center sm:px-10 sm:py-14">
-      <p class="eyebrow">联系 · 预订</p>
-      <h2 class="section-title mt-4">想吃蛋黄酥？</h2>
-      <p class="mt-4 text-base sm:text-lg">可以联系{SITE.ownerName}预订。</p>
-      <p class="mt-2 text-sm text-clay">{CONTACT.hours}</p>
+      <p class="eyebrow">{contact.eyebrow}</p>
+      <h2 class="section-title mt-4">{contact.title}</h2>
+      <p class="mt-4 text-base sm:text-lg">{contact.intro}</p>
+      <p class="mt-2 text-sm text-clay">{contact.hours}</p>
 
       <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
         <button
           type="button"
           class="btn btn-primary"
           data-copy-wechat
-          data-wechat={CONTACT.wechat}
-          aria-label={`复制微信号 ${CONTACT.wechat}`}
+          data-wechat={contact.wechat}
+          aria-label={`复制微信号 ${contact.wechat}`}
         >
-          微信联系
+          {contact.ctaLabel}
         </button>
-        <a class="btn btn-ghost" href={`tel:${CONTACT.phone}`}>电话联系</a>
+        <a class="btn btn-ghost" href={`tel:${contact.phone}`}>{contact.ctaSecondaryLabel}</a>
       </div>
 
       <dl
@@ -28,17 +34,15 @@ import { CONTACT, SITE } from '../consts';
       >
         <div class="flex items-center gap-2">
           <dt class="text-clay">微信</dt>
-          <dd class="font-medium text-ink">{CONTACT.wechat}</dd>
+          <dd class="font-medium text-ink">{contact.wechat}</dd>
         </div>
         <div class="flex items-center gap-2">
           <dt class="text-clay">电话</dt>
-          <dd class="font-medium text-ink">{CONTACT.phone}</dd>
+          <dd class="font-medium text-ink">{contact.phone}</dd>
         </div>
       </dl>
 
-      <p class="mt-6 text-xs leading-relaxed text-clay">
-        目前只接受微信或电话预订，暂时不支持在线支付。{CONTACT.delivery}。
-      </p>
+      <p class="mt-6 text-xs leading-relaxed text-clay">{contact.note}</p>
     </div>
   </div>
 </section>

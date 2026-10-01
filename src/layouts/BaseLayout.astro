@@ -3,33 +3,45 @@ import '../styles/global.css';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { SITE } from '../consts';
+import { getSite } from '../lib/content';
 
 interface Props {
+  /** 不传就用「网站内容.md › 品牌」里的网页标题 / 网页描述 */
   title?: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
   type?: 'website' | 'article';
   publishedTime?: string;
   noindex?: boolean;
 }
 
-const props = Astro.props;
+const { title, description, image, imageAlt, type, publishedTime, noindex } = Astro.props;
+const site = await getSite();
 ---
 
 <!doctype html>
-<html lang={SITE.lang}>
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <BaseHead {...props} />
+    <BaseHead
+      siteName={site.brand.name}
+      title={title ?? site.brand.pageTitle}
+      description={description ?? site.brand.pageDescription}
+      image={image ?? site.brand.ogImage}
+      imageAlt={imageAlt ?? site.brand.ogImageAlt}
+      type={type}
+      publishedTime={publishedTime}
+      noindex={noindex}
+    />
   </head>
   <body class="flex min-h-dvh flex-col">
     <a class="skip-link" href="#main">跳到主要内容</a>
-    <Header />
+    <Header site={site} />
     <main id="main" class="flex-1">
       <slot />
     </main>
-    <Footer />
+    <Footer site={site} />
   </body>
 </html>
