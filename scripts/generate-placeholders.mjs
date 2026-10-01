@@ -34,13 +34,21 @@ const FILLINGS = {
 const PRESETS = [
   { file: 'hero/hero.svg', w: 1600, h: 1100, kind: 'hero', title: '刚出炉的蛋黄酥' },
   { file: 'hero/og.svg', w: 1200, h: 630, kind: 'og' },
+  // 每张产品图都按它的真实配料画：
+  //   filling  = 馅料颜色（豆沙 / 莲蓉）
+  //   floss    = 有没有肉松那一圈
+  //   yolk     = 有没有咸蛋黄
+  //   sesame   = 表面撒的是黑芝麻还是白芝麻
   {
-    file: 'products/original.svg',
+    file: 'products/classic.svg',
     w: 1200,
     h: 900,
     kind: 'product',
-    title: '原味蛋黄酥',
-    filling: 'original',
+    title: '笑笑经典蛋黄酥',
+    filling: 'redbean',
+    floss: true,
+    yolk: true,
+    sesame: 'black',
   },
   {
     file: 'products/red-bean.svg',
@@ -49,30 +57,42 @@ const PRESETS = [
     kind: 'product',
     title: '红豆沙蛋黄酥',
     filling: 'redbean',
+    floss: false,
+    yolk: true,
+    sesame: 'black',
+  },
+  {
+    file: 'products/lotus-yolk.svg',
+    w: 1200,
+    h: 900,
+    kind: 'product',
+    title: '莲蓉蛋黄酥',
+    filling: 'lotus',
+    floss: false,
+    yolk: true,
+    sesame: 'white',
+  },
+  {
+    file: 'products/red-bean-floss.svg',
+    w: 1200,
+    h: 900,
+    kind: 'product',
+    title: '红豆沙肉松酥',
+    filling: 'redbean',
+    floss: true,
+    yolk: false,
+    sesame: 'black',
   },
   {
     file: 'products/lotus.svg',
     w: 1200,
     h: 900,
     kind: 'product',
-    title: '莲蓉蛋黄酥',
-    filling: 'lotus',
-  },
-  {
-    file: 'products/seasonal.svg',
-    w: 1200,
-    h: 900,
-    kind: 'product',
-    title: '当季限定',
-    filling: 'seasonal',
-  },
-  {
-    file: 'products/lotus-pastry.svg',
-    w: 1200,
-    h: 900,
-    kind: 'product',
     title: '莲蓉酥',
     filling: 'lotus',
+    floss: false,
+    yolk: false,
+    sesame: 'white',
   },
   { file: 'story/xiaoxiao.svg', w: 1200, h: 1200, kind: 'story', title: '笑笑在厨房做糕点' },
   { file: 'journal/first-batch.svg', w: 1600, h: 1000, kind: 'journal', title: '第一炉蛋黄酥' },
@@ -172,16 +192,29 @@ function flossRing(cx, baseY, R, seed) {
     <g clip-path="url(#${clipId})">${fibers}</g>`;
 }
 
-/** 黑芝麻：撒在酥皮表面，剖面里只看得到顶部那几颗被切开的 */
-function blackSesame(cx, baseY, R) {
+/**
+ * 表面撒的芝麻：黑芝麻 / 白芝麻。
+ * 剖面里只看得到顶部那三颗被切开的。
+ * 白芝麻比黑芝麻大一点，颜色浅，所以要描一圈边才看得清。
+ */
+function topSesame(cx, baseY, R, kind = 'black') {
   const r = R * 0.95;
   const cy = baseY - FLAT * r;
+  const white = kind === 'white';
+  // 白芝麻比酥皮只亮一点点，小尺寸下会糊掉，所以描一圈深一点的边
+  const fill = white ? '#FFFDF4' : '#3A3128';
+  const rx = white ? R * 0.046 : R * 0.04;
+  const ry = white ? R * 0.029 : R * 0.024;
+  const stroke = white
+    ? ` stroke="#C4AC83" stroke-width="${r1(R * 0.009)}"`
+    : '';
+
   return [56, 90, 124]
     .map((deg) => {
       const a = (deg * Math.PI) / 180;
       const x = cx + Math.cos(a) * r;
       const y = cy - Math.sin(a) * r;
-      return `<ellipse cx="${r1(x)}" cy="${r1(y)}" rx="${r1(R * 0.04)}" ry="${r1(R * 0.024)}" transform="rotate(${r1(deg - 90)} ${r1(x)} ${r1(y)})" fill="#3A3128"/>`;
+      return `<ellipse cx="${r1(x)}" cy="${r1(y)}" rx="${r1(rx)}" ry="${r1(ry)}" transform="rotate(${r1(deg - 90)} ${r1(x)} ${r1(y)})" fill="${fill}"${stroke}/>`;
     })
     .join('');
 }
@@ -192,7 +225,13 @@ function blackSesame(cx, baseY, R) {
  * @param {number} R 半宽
  * @param {[string,string,string]} filling 馅料配色
  */
-function cutaway(cx, baseY, R, filling, { floss: withFloss = true, seed = 1 } = {}) {
+function cutaway(
+  cx,
+  baseY,
+  R,
+  filling,
+  { floss: withFloss = true, yolk: withYolk = true, sesame = 'black', seed = 1 } = {},
+) {
   const [paste, pasteDark, pasteLight] = filling;
   const maskId = `nib-${Math.round(cx)}-${Math.round(baseY)}-${Math.round(R)}`;
   const cyBase = baseY - FLAT * R;
@@ -208,10 +247,12 @@ function cutaway(cx, baseY, R, filling, { floss: withFloss = true, seed = 1 } = 
   const yolkR = R * SCALE.yolk;
   const yolkCy = cyBase - R * 0.06;
 
-  // 豆沙里的小颗粒，让色块不那么死板（只撒在蛋黄外侧那一圈）
-  const crumbs = Array.from({ length: 18 }, () => {
+  // 豆沙里的小颗粒，让色块不那么死板。
+  // 有蛋黄时只撒在蛋黄外侧那一圈；没有蛋黄（比如莲蓉酥）就铺满整个内圈
+  const crumbInner = withYolk ? 0.46 : 0.14;
+  const crumbs = Array.from({ length: withYolk ? 18 : 30 }, () => {
     const a = rand() * Math.PI * 2;
-    const rr = R * (0.46 + rand() * 0.26);
+    const rr = R * (crumbInner + rand() * (0.72 - crumbInner));
     return `<circle cx="${r1(cx + Math.cos(a) * rr)}" cy="${r1(cyBase + Math.sin(a) * rr)}" r="${r1(R * (0.01 + rand() * 0.014))}" fill="${pasteLight}" opacity="0.5"/>`;
   }).join('');
 
@@ -230,10 +271,14 @@ function cutaway(cx, baseY, R, filling, { floss: withFloss = true, seed = 1 } = 
         ${withFloss ? flossRing(cx, baseY, R, seed) : ''}
         <path d="${cutFacePath(cx, baseY, R, SCALE.paste, LIFT.paste * R)}" fill="${paste}" stroke="${pasteDark}" stroke-width="${r1(R * 0.012)}"/>
         ${crumbs}
-        <circle cx="${r1(cx)}" cy="${r1(yolkCy)}" r="${r1(yolkR)}" fill="url(#yolk)" stroke="#CE9520" stroke-width="${r1(R * 0.012)}"/>
+        ${
+          withYolk
+            ? `<circle cx="${r1(cx)}" cy="${r1(yolkCy)}" r="${r1(yolkR)}" fill="url(#yolk)" stroke="#CE9520" stroke-width="${r1(R * 0.012)}"/>
         <circle cx="${r1(cx)}" cy="${r1(yolkCy)}" r="${r1(yolkR * 0.7)}" fill="none" stroke="#E7B843" stroke-width="${r1(R * 0.01)}" opacity="0.45"/>
-        <ellipse cx="${r1(cx - yolkR * 0.3)}" cy="${r1(yolkCy - yolkR * 0.34)}" rx="${r1(yolkR * 0.3)}" ry="${r1(yolkR * 0.2)}" fill="#F8DA8E" opacity="0.6"/>
-        ${blackSesame(cx, baseY, R)}
+        <ellipse cx="${r1(cx - yolkR * 0.3)}" cy="${r1(yolkCy - yolkR * 0.34)}" rx="${r1(yolkR * 0.3)}" ry="${r1(yolkR * 0.2)}" fill="#F8DA8E" opacity="0.6"/>`
+            : ''
+        }
+        ${topSesame(cx, baseY, R, sesame)}
       </g>
     </g>`;
 }
@@ -361,7 +406,12 @@ function body(preset) {
   const m = Math.min(w, h);
   const filling = FILLINGS[preset.filling ?? 'original'];
   // 肉松默认有一层；某个产品没有肉松，就在它的 preset 里写 floss: false
-  const cutOpts = { floss: preset.floss !== false, seed: w + h };
+  const cutOpts = {
+    floss: preset.floss !== false,
+    yolk: preset.yolk !== false,
+    sesame: preset.sesame ?? 'black',
+    seed: w + h,
+  };
 
   const bg = `<rect width="${w}" height="${h}" fill="url(#bg)"/>
     <ellipse cx="${w / 2}" cy="${h * 0.42}" rx="${w * 0.55}" ry="${h * 0.5}" fill="url(#glow)"/>
