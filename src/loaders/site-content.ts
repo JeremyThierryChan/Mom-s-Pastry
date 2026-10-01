@@ -45,10 +45,14 @@ const KNOWN_KEYS = new Set([
   '图片描述',
   // 产品
   '一句话描述',
+  '内馅',
+  '口感',
   '价格',
   '规格',
   '状态',
   '小备注',
+  // 对比
+  '对比行',
   // 手作记录
   '显示',
   '日期',
@@ -189,6 +193,15 @@ function f(block: Block, key: string): string {
   return block.fields[key] ?? '';
 }
 
+/** 把「内馅 / 口感 / 价格」这样的写法拆成数组；没写就用默认值 */
+function parseList(value: string, fallback: string[]): string[] {
+  const list = value
+    .split(/[/、,，|]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return list.length > 0 ? list : fallback;
+}
+
 /**
  * 「是 / 否」这类中文开关。写别的、或者不写，都按 fallback 走。
  * 用在「显示：否」这种地方 —— 内容留着，只是先不显示。
@@ -263,6 +276,7 @@ export function siteContentLoader(): Loader {
       const brand = readSection(sections, '品牌');
       const hero = readSection(sections, '首页');
       const products = readSection(sections, '今日手作');
+      const compare = readSection(sections, '对比');
       const booking = readSection(sections, '预订须知');
       const about = readSection(sections, '关于笑笑');
       const journal = readSection(sections, '手作记录');
@@ -303,13 +317,25 @@ export function siteContentLoader(): Loader {
             items: products.items.map((entry) => ({
               name: entry.name,
               description: f(entry, '一句话描述'),
+              filling: f(entry, '内馅'),
+              taste: f(entry, '口感'),
               price: f(entry, '价格'),
               unit: f(entry, '规格'),
               status: f(entry, '状态'),
               image: f(entry, '图片'),
               imageAlt: f(entry, '图片描述'),
               note: f(entry, '小备注'),
+              // 原样保留这一条的所有字段（中文名 → 值），
+              // 「## 对比」区块里写什么行名就取什么字段，方便以后加对比项
+              fields: entry.fields,
             })),
+          },
+          compare: {
+            eyebrow: f(compare, '小标签'),
+            title: f(compare, '标题'),
+            note: f(compare, '说明'),
+            rows: parseList(f(compare, '对比行'), ['内馅', '口感', '价格', '规格', '状态']),
+            visible: toBool(f(compare, '显示'), true),
           },
           booking: {
             eyebrow: f(booking, '小标签'),

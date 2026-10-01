@@ -56,14 +56,26 @@ const site = defineCollection({
         z.object({
           name: z.string(),
           description: need('一句话描述'),
+          filling: z.string().optional(),
+          taste: z.string().optional(),
           price: looseNumber('价格'),
           unit: need('规格'),
           status: need('状态'),
           image: need('图片'),
           imageAlt: need('图片描述'),
           note: z.string().optional(),
+          /** 这一条的所有字段（中文名 → 值），对比表按行名取 */
+          fields: z.record(z.string(), z.string()),
         }),
       ),
+    }),
+    compare: z.object({
+      eyebrow: need('对比 › 小标签'),
+      title: need('对比 › 标题'),
+      note: need('对比 › 说明'),
+      /** 表格里显示哪几行，名字对应产品里的字段名（如「内馅」「价格」） */
+      rows: z.array(z.string()),
+      visible: z.boolean(),
     }),
     booking: z.object({
       eyebrow: need('预订须知 › 小标签'),

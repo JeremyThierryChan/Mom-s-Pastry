@@ -1,6 +1,7 @@
 ---
 import AboutSection from '../components/AboutSection.astro';
 import BookingSection from '../components/BookingSection.astro';
+import CompareSection from '../components/CompareSection.astro';
 import ContactSection from '../components/ContactSection.astro';
 import Hero from '../components/Hero.astro';
 import JournalCard from '../components/JournalCard.astro';
@@ -41,6 +42,12 @@ const jsonLd = {
       <ProductGrid products={site.products.items} class="mt-10 md:mt-12" />
     </div>
   </section>
+
+  {
+    site.compare.visible && (
+      <CompareSection compare={site.compare} products={site.products.items} />
+    )
+  }
 
   {site.booking.visible && <BookingSection booking={site.booking} />}
 
