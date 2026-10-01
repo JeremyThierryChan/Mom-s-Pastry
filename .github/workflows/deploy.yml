@@ -1,18 +1,19 @@
 name: Deploy to GitHub Pages
 
 on:
-  # 推送到 main 分支时自动构建并发布
+  # 推送到 main 就自动构建 + 部署
   push:
     branches: [main]
-  # 也可以在 Actions 页面手动触发
+  # 也可以在 Actions 页面点按钮手动跑一次
   workflow_dispatch:
 
+# GitHub Pages 部署需要这三个权限
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 只保留最新一次部署，避免排队
+# 同时只跑一个部署；连着推两次时，取消排队中的旧任务
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -20,34 +21,49 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: 检出代码
+        uses: actions/checkout@v7
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      # 读取仓库的 Pages 配置（站点地址、base 路径）。
+      # 注意：这里没开 enablement，所以需要先在 Settings → Pages 里
+      # 把 Source 设成 GitHub Actions，否则这一步会报错并提示你去做这件事。
+      - name: 读取 Pages 配置
+        id: pages
+        uses: actions/configure-pages@v6
+
+      - name: 安装 Node
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: 安装依赖
         run: npm ci
 
-      - name: Build
+      # 类型检查只作为提示，失败也不拦着部署
+      # （内容改动偶尔引入类型问题时，笑笑的小铺不该因此上不了线）
+      - name: 类型检查
+        run: npm run check
+        continue-on-error: true
+
+      - name: 构建静态站点
         run: npm run build
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: 上传构建产物
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./dist
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy
+      - name: 发布到 GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
