@@ -221,13 +221,17 @@ public/images/
 
 | 文件 | 用途 |
 | --- | --- |
-| `public/favicon.svg` | 浏览器标签页图标（现代浏览器），画的是俯视的经典蛋黄酥 |
+| `public/favicon.svg` | 浏览器标签页图标（现代浏览器） |
 | `public/favicon.ico` | 老浏览器、微信内置浏览器；内含 16 / 32 / 48 三个尺寸 |
 | `public/apple-touch-icon.png` | iOS「添加到主屏幕」用的 180×180 |
 | `public/images/hero/og.png` | 社交分享图，1200×630，从 `og.svg` 渲染 |
 
-- 改图标：编辑 `scripts/generate-icons.mjs` 里的 `iconSvg()`，然后 `npm run icons`。
-- 图标里的芝麻**故意画得比真实比例大很多** —— 缩到 16px 时，按真实比例画的芝麻会完全看不见。
+- 图标**直接取自产品卡里那张「笑笑经典蛋黄酥」的剖面图**
+  （`public/images/products/classic.svg`），所以产品图改了图标也会跟着变。
+- 顺序有依赖：先 `npm run placeholders` 生成产品图，再 `npm run icons`。产品图不在会报错提醒。
+- 图标里剖面占边长的 78%（`COVER`），四周留一圈米色 —— 铺满的话缩到 16px 会糊成一团。
+- 想要别款产品当图标：改 `generate-icons.mjs` 里 `cutawayContent()` 读的那个文件，
+  和 `ART_BOX`（该剖面在 1200×900 里的范围）。
 - `.ico` 是脚本手工拼的（ICO 允许直接内嵌 PNG），所以没有引入任何新依赖。
 
 ### 现在的占位图是怎么画出来的

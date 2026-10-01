@@ -6,16 +6,15 @@
  *   public/apple-touch-icon.png iOS 添加到主屏用的 180×180
  *   public/images/hero/og.png   社交平台分享图，从 og.svg 渲染
  *
+ * 图标直接用产品卡里那张「笑笑经典蛋黄酥」的剖面图
+ * （public/images/products/classic.svg），所以产品图改了图标也会跟着变。
+ *
  * 为什么要 PNG：微信 / 微博 / Twitter 等平台**不渲染 SVG**，
  * 之前 og 图是 .svg，所以分享出去没有图。
  *
- * 图标画的是「笑笑经典蛋黄酥」的俯视图：金黄酥皮 + 黑芝麻。
- * 注意：图标尺寸很小，芝麻要画得比真实比例大得多，
- * 否则缩到 16px 就完全看不见了。
- *
- * 跑法：npm run icons
+ * 跑法：npm run icons（要先有产品图，即 npm run placeholders）
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
@@ -24,53 +23,71 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = resolve(root, 'public');
 
 /* ------------------------------------------------------------------
-   一、图标图形（512×512，俯视的一整颗蛋黄酥）
+   一、图标图形
 ------------------------------------------------------------------ */
 
-/** 黑芝麻：位置写死，保证每次生成都一样，也避免缩小时挤成一团 */
-const SESAME = [
-  [196, 178, -24],
-  [318, 196, 34],
-  [232, 300, 12],
-  [332, 296, -18],
-  [214, 386, 26],
-  [300, 392, -30],
-];
+const ICON = 512;
 
-function iconSvg() {
-  const seeds = SESAME.map(
-    ([x, y, deg]) =>
-      `<ellipse cx="${x}" cy="${y}" rx="20" ry="12" transform="rotate(${deg} ${x} ${y})" fill="#3A3128"/>`,
-  ).join('');
+/** 产品图是 1200×900，剖面本身（含底部投影）大致落在下面这个范围里 */
+const ART_BOX = { x0: 186, y0: 115, x1: 1014, y1: 840 };
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="笑笑的蛋黄酥">
+/** 剖面占图标边长的比例。留一圈米色边，小尺寸下才像个「图标」而不是糊满 */
+const COVER = 0.78;
+
+/**
+ * 取出产品图的内部内容。
+ * 去掉它自带的那块整幅背景 —— 图标用的是圆角底，
+ * 留着方形的背景会把圆角盖掉。
+ */
+function cutawayContent() {
+  const file = resolve(pub, 'images/products/classic.svg');
+  let raw;
+  try {
+    raw = readFileSync(file, 'utf8');
+  } catch {
+    console.error('✗ 找不到产品图 public/images/products/classic.svg');
+    console.error('  先跑 npm run placeholders 生成产品图，再跑 npm run icons');
+    process.exit(1);
+  }
+
+  return raw
+    .replace(/^[\s\S]*?<svg[^>]*>/, '')
+    .replace(/<\/svg>\s*$/, '')
+    .replace(/\s*<rect width="1200" height="900" fill="url\(#bg\)"\/>/, '');
+}
+
+/**
+ * @param rounded 是否切圆角。
+ *   浏览器标签页图标要圆角（网页背景上好看）；
+ *   iOS 主屏图标**不能**要 —— 圆角外是透明的，iOS 会把透明区填成黑色，
+ *   主屏上就出现四个黑角。所以那边用不透明的方形，圆角交给 iOS 自己加。
+ */
+function iconSvg({ rounded = true } = {}) {
+  // 把剖面按比例缩到方框里并居中
+  const artW = ART_BOX.x1 - ART_BOX.x0;
+  const artH = ART_BOX.y1 - ART_BOX.y0;
+  const scale = (ICON * COVER) / Math.max(artW, artH);
+  const tx = ICON / 2 - ((ART_BOX.x0 + ART_BOX.x1) / 2) * scale;
+  const ty = ICON / 2 - ((ART_BOX.y0 + ART_BOX.y1) / 2) * scale;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${ICON} ${ICON}" width="${ICON}" height="${ICON}" role="img" aria-label="笑笑的蛋黄酥">
   <title>笑笑的蛋黄酥</title>
-  <defs>
-    <!-- 刷过蛋液、烤成金棕色的顶面 -->
-    <radialGradient id="wash" cx="36%" cy="28%" r="82%">
-      <stop offset="0" stop-color="#F0C377"/>
-      <stop offset="0.62" stop-color="#DDA349"/>
-      <stop offset="1" stop-color="#D0903A"/>
-    </radialGradient>
-  </defs>
 
-  <!-- 米色圆角底，浅色和深色标签栏里都看得清 -->
-  <rect width="512" height="512" rx="104" fill="#FBF3E4"/>
+  ${
+    rounded
+      ? `<clipPath id="icon-round">
+    <rect width="${ICON}" height="${ICON}" rx="104"/>
+  </clipPath>`
+      : ''
+  }
 
-  <!-- 落在台面上的投影 -->
-  <ellipse cx="256" cy="392" rx="150" ry="26" fill="#B79B73" opacity="0.16"/>
-
-  <!-- 酥皮 -->
-  <circle cx="256" cy="266" r="168" fill="#F2E1BE" stroke="#DFC9A2" stroke-width="10"/>
-
-  <!-- 刷了蛋液的顶面，稍微偏左上 -->
-  <circle cx="244" cy="250" r="120" fill="url(#wash)"/>
-
-  <!-- 顶面的油亮高光 -->
-  <ellipse cx="192" cy="192" rx="42" ry="26" transform="rotate(-24 192 192)" fill="#F7DFAE" opacity="0.5"/>
-
-  <!-- 黑芝麻 -->
-  ${seeds}
+  <g${rounded ? ' clip-path="url(#icon-round)"' : ''}>
+    <!-- 米色底：用产品图自己那套渐变，颜色才一致 -->
+    <rect width="${ICON}" height="${ICON}" fill="url(#bg)"/>
+    <g transform="translate(${tx.toFixed(2)} ${ty.toFixed(2)}) scale(${scale.toFixed(5)})">
+${cutawayContent()}
+    </g>
+  </g>
 </svg>
 `;
 }
@@ -113,6 +130,7 @@ function buildIco(entries) {
 ------------------------------------------------------------------ */
 
 const svg = iconSvg();
+const svgSquare = iconSvg({ rounded: false });
 
 /** 渲染成指定边长的 PNG */
 async function png(size, source = Buffer.from(svg)) {
@@ -138,8 +156,8 @@ const ico = buildIco(icoEntries);
 writeFileSync(resolve(pub, 'favicon.ico'), ico);
 console.log(`✓ public/favicon.ico  (16/32/48，${(ico.length / 1024).toFixed(1)} KB)`);
 
-// 3) iOS 主屏图标：不要透明，所以保持米色底
-const apple = await png(180);
+// 3) iOS 主屏图标：方形不透明，圆角交给 iOS
+const apple = await png(180, Buffer.from(svgSquare));
 writeFileSync(resolve(pub, 'apple-touch-icon.png'), apple);
 console.log(`✓ public/apple-touch-icon.png  (180×180，${(apple.length / 1024).toFixed(1)} KB)`);
 
