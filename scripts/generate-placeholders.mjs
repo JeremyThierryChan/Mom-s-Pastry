@@ -403,11 +403,16 @@ function body(preset) {
       ${hint(w / 2, h * 0.915 + m * 0.05, '照片待补', m * 0.026)}`;
   }
 
-  // 产品图：一个切面占画面主体
+  // 产品图：切面尽量占满画布。
+  // 产品图在卡片里只有 250px 宽、在对比表里只有 120px 宽，
+  // 之前画面只占 50%，小尺寸下几乎看不清；
+  // 底部那两行小字在这个尺寸下也完全读不出来，所以不放文字了
+  //（卡片和对比表下面本来就写着产品名）。
+  const R = m * 0.46;
+  const shapeHeight = (1 + FLAT) * R;
+  const baseY = (h + shapeHeight) / 2; // 上下边距一样
   return `${bg}
-    <g>${cutaway(w * 0.5, h * 0.7, m * 0.335, filling, cutOpts)}</g>
-    ${caption(w / 2, h * 0.8, title, m * 0.052)}
-    ${hint(w / 2, h * 0.87, '照片待补', m * 0.032)}`;
+    <g>${cutaway(w * 0.5, baseY, R, filling, cutOpts)}</g>`;
 }
 
 function render(preset) {

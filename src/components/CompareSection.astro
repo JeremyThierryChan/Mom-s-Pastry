@@ -21,6 +21,12 @@ function valueOf(product: SiteContent['products']['items'][number], row: string)
   if (row === '价格') return formatPrice(product.price, product.unit);
   return product.fields[row] ?? '';
 }
+
+/**
+ * 表格最小宽度：左边留 4.5rem 给行名，每款产品 8.7rem。
+ * 产品多了表格就变宽、手机上的滑动距离也自动变长，不用手改。
+ */
+const minWidth = `${(4.5 + products.length * 8.7).toFixed(1)}rem`;
 ---
 
 <section id="compare" class="section">
@@ -36,7 +42,10 @@ function valueOf(product: SiteContent['products']['items'][number], row: string)
 
           {/* 手机放不下四列，就在这个容器里横向滑动；页面本身不会横向滚动 */}
           <div class="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-            <table class="w-full min-w-[30rem] border-collapse text-left">
+            <table
+              class="w-full border-collapse text-left"
+              style={`min-width: ${minWidth}`}
+            >
               <caption class="sr-only">{compare.title}</caption>
 
               <thead>
