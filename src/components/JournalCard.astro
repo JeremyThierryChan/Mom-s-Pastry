@@ -19,7 +19,7 @@ const { title, date, summary, image, imageAlt } = entry.data;
         <Photo
           src={image}
           alt={imageAlt ?? title}
-          aspect="aspect-[16/10]"
+          ratio="ratio-16-10"
           frameClass="rounded-none border-0"
         />
       )

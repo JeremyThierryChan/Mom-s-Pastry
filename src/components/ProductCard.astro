@@ -13,7 +13,7 @@ const { name, description, price, unit, status, image, imageAlt, note } = produc
 ---
 
 <article class="card flex h-full w-full flex-col overflow-hidden">
-  <Photo src={image} alt={imageAlt} aspect="aspect-[4/3]" frameClass="rounded-none border-0" />
+  <Photo src={image} alt={imageAlt} ratio="ratio-4-3" frameClass="rounded-none border-0" />
   <div class="flex flex-1 flex-col p-5">
     <div>
       <StatusBadge status={status} />

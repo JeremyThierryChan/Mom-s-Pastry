@@ -52,7 +52,7 @@ const older = index >= 0 && index < all.length - 1 ? all[index + 1] : undefined;
       {
         image && (
           <div class="mt-8">
-            <Photo src={image} alt={imageAlt ?? title} aspect="aspect-[16/10]" loading="eager" />
+            <Photo src={image} alt={imageAlt ?? title} ratio="ratio-16-10" loading="eager" />
           </div>
         )
       }

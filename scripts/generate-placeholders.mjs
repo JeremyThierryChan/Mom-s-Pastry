@@ -376,9 +376,9 @@ function cutaway(
         ${crumbs}
         ${
           withYolk
-            ? `<circle cx="${r1(cx)}" cy="${r1(yolkCy)}" r="${r1(yolkR)}" fill="url(#yolk)" stroke="#CE9520" stroke-width="${r1(R * 0.012)}"/>
-        <circle cx="${r1(cx)}" cy="${r1(yolkCy)}" r="${r1(yolkR * 0.7)}" fill="none" stroke="#E7B843" stroke-width="${r1(R * 0.01)}" opacity="0.45"/>
-        <ellipse cx="${r1(cx - yolkR * 0.3)}" cy="${r1(yolkCy - yolkR * 0.34)}" rx="${r1(yolkR * 0.3)}" ry="${r1(yolkR * 0.2)}" fill="#F8DA8E" opacity="0.6"/>`
+            ? `<circle cx="${r1(cx)}" cy="${r1(yolkCy)}" r="${r1(yolkR)}" fill="url(#yolk)" stroke="#A96A10" stroke-width="${r1(R * 0.012)}"/>
+        <circle cx="${r1(cx)}" cy="${r1(yolkCy)}" r="${r1(yolkR * 0.7)}" fill="none" stroke="#D9A32A" stroke-width="${r1(R * 0.01)}" opacity="0.45"/>
+        <ellipse cx="${r1(cx - yolkR * 0.3)}" cy="${r1(yolkCy - yolkR * 0.34)}" rx="${r1(yolkR * 0.3)}" ry="${r1(yolkR * 0.2)}" fill="#F2C667" opacity="0.5"/>`
             : ''
         }
         ${topSesame(cx, baseY, R, sesame)}
@@ -493,9 +493,11 @@ function defs() {
         <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.85"/>
         <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
       </radialGradient>
+      <!-- 咸蛋黄：比莲蓉馅深一档的橙黄。原来用浅金色，
+           和莲蓉馅的亮度只差 7，小图上「莲蓉蛋黄酥」和「莲蓉酥」几乎一样 -->
       <radialGradient id="yolk" cx="36%" cy="32%" r="72%">
-        <stop offset="0" stop-color="#F7CE68"/>
-        <stop offset="1" stop-color="#DE9F1E"/>
+        <stop offset="0" stop-color="#DFA022"/>
+        <stop offset="1" stop-color="#A96608"/>
       </radialGradient>
       <radialGradient id="wash" cx="40%" cy="34%" r="70%">
         <stop offset="0" stop-color="#E9BE84" stop-opacity="0.95"/>

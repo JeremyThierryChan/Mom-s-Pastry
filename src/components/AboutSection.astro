@@ -12,7 +12,7 @@ const { about } = Astro.props;
 <section id="about" class="section">
   <div class="wrap">
     <div class="grid items-center gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
-      <Photo src={about.image} alt={about.imageAlt} aspect="aspect-[4/3] md:aspect-[4/5]" />
+      <Photo src={about.image} alt={about.imageAlt} ratio="ratio-4-3 md-ratio-4-5" />
 
       <div>
         <p class="eyebrow">{about.eyebrow}</p>

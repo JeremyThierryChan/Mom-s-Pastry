@@ -10,9 +10,11 @@
         <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.85"/>
         <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
       </radialGradient>
+      <!-- 咸蛋黄：比莲蓉馅深一档的橙黄。原来用浅金色，
+           和莲蓉馅的亮度只差 7，小图上「莲蓉蛋黄酥」和「莲蓉酥」几乎一样 -->
       <radialGradient id="yolk" cx="36%" cy="32%" r="72%">
-        <stop offset="0" stop-color="#F7CE68"/>
-        <stop offset="1" stop-color="#DE9F1E"/>
+        <stop offset="0" stop-color="#DFA022"/>
+        <stop offset="1" stop-color="#A96608"/>
       </radialGradient>
       <radialGradient id="wash" cx="40%" cy="34%" r="70%">
         <stop offset="0" stop-color="#E9BE84" stop-opacity="0.95"/>

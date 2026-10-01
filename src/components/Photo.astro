@@ -8,8 +8,8 @@ import { withBase } from '../lib/url';
 interface Props {
   src: string;
   alt: string;
-  /** Tailwind 比例工具类，决定图片占位框的长宽比 */
-  aspect?: string;
+  /** 比例类名，决定图片框的长宽比，例如 'ratio-4-3 md-ratio-16-9' */
+  ratio?: string;
   /** 外层 figure 的额外类名 */
   class?: string;
   /** 图片框的额外类名，例如卡片里需要 rounded-none border-0 */
@@ -22,7 +22,7 @@ interface Props {
 const {
   src,
   alt,
-  aspect = 'aspect-[4/3]',
+  ratio = 'ratio-4-3',
   class: className,
   frameClass,
   imgClass,
@@ -32,7 +32,7 @@ const {
 ---
 
 <figure class:list={[className]}>
-  <div class:list={['photo-frame', aspect, frameClass]}>
+  <div class:list={['photo-frame', ratio, frameClass]}>
     <img
       class:list={['photo-img', imgClass]}
       src={withBase(src)}
