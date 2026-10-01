@@ -370,15 +370,17 @@ function body(preset) {
   }
 
   // 一个大剖面 + 一颗完整的 + 一杯茶
+  // 注意：这两张（hero / story）不放底部文字。
+  // 页面里图片框是 object-fit: cover —— 首页大图在桌面端是 16/9 的框，
+  // 会把 1600×1100 上下各裁掉约 100px，story 在手机端 4/3 的框里也会裁，
+  // 底部那行「照片待补」正好被切一半。画面本身已经说明是占位图了。
   if (kind === 'hero') {
     return `${bg}
       <g>
         ${cup(w * 0.84, h * 0.79, m * 0.13)}
         ${whole(w * 0.78, h * 0.4, m * 0.155, 11)}
         ${cutaway(w * 0.36, h * 0.82, m * 0.29, filling, cutOpts)}
-      </g>
-      ${caption(w / 2, h * 0.93, title, m * 0.048)}
-      ${hint(w / 2, h * 0.93 + m * 0.055, '照片待补', m * 0.03)}`;
+      </g>`;
   }
 
   if (kind === 'story') {
@@ -388,9 +390,7 @@ function body(preset) {
         ${whole(w * 0.79, h * 0.67, m * 0.125, 8)}
         ${cutaway(w * 0.42, h * 0.63, m * 0.23, filling, cutOpts)}
         ${cup(w * 0.19, h * 0.8, m * 0.125)}
-      </g>
-      ${caption(w / 2, h * 0.925, title, m * 0.042)}
-      ${hint(w / 2, h * 0.925 + m * 0.05, '照片待补', m * 0.026)}`;
+      </g>`;
   }
 
   if (kind === 'journal') {
