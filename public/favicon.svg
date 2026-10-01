@@ -1,9 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="笑笑的蛋黄酥">
-  <rect width="64" height="64" rx="14" fill="#FDFAF4"/>
-  <!-- 蛋黄酥：酥皮与咸蛋黄 -->
-  <circle cx="32" cy="33" r="20" fill="#F6E7C9" stroke="#DFC9A2" stroke-width="1.5"/>
-  <circle cx="32" cy="33" r="14.5" fill="#F2DFBB" stroke="#E4CFA9" stroke-width="1.2"/>
-  <circle cx="32" cy="33" r="8" fill="#E4A82E"/>
-  <circle cx="32" cy="33" r="8" fill="none" stroke="#CF9520" stroke-width="1.1" opacity="0.7"/>
-  <circle cx="29.4" cy="30.4" r="2.4" fill="#F3C45C" opacity="0.85"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="笑笑的蛋黄酥">
+  <title>笑笑的蛋黄酥</title>
+  <defs>
+    <!-- 刷过蛋液、烤成金棕色的顶面 -->
+    <radialGradient id="wash" cx="36%" cy="28%" r="82%">
+      <stop offset="0" stop-color="#F0C377"/>
+      <stop offset="0.62" stop-color="#DDA349"/>
+      <stop offset="1" stop-color="#D0903A"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 米色圆角底，浅色和深色标签栏里都看得清 -->
+  <rect width="512" height="512" rx="104" fill="#FBF3E4"/>
+
+  <!-- 落在台面上的投影 -->
+  <ellipse cx="256" cy="392" rx="150" ry="26" fill="#B79B73" opacity="0.16"/>
+
+  <!-- 酥皮 -->
+  <circle cx="256" cy="266" r="168" fill="#F2E1BE" stroke="#DFC9A2" stroke-width="10"/>
+
+  <!-- 刷了蛋液的顶面，稍微偏左上 -->
+  <circle cx="244" cy="250" r="120" fill="url(#wash)"/>
+
+  <!-- 顶面的油亮高光 -->
+  <ellipse cx="192" cy="192" rx="42" ry="26" transform="rotate(-24 192 192)" fill="#F7DFAE" opacity="0.5"/>
+
+  <!-- 黑芝麻 -->
+  <ellipse cx="196" cy="178" rx="20" ry="12" transform="rotate(-24 196 178)" fill="#3A3128"/><ellipse cx="318" cy="196" rx="20" ry="12" transform="rotate(34 318 196)" fill="#3A3128"/><ellipse cx="232" cy="300" rx="20" ry="12" transform="rotate(12 232 300)" fill="#3A3128"/><ellipse cx="332" cy="296" rx="20" ry="12" transform="rotate(-18 332 296)" fill="#3A3128"/><ellipse cx="214" cy="386" rx="20" ry="12" transform="rotate(26 214 386)" fill="#3A3128"/><ellipse cx="300" cy="392" rx="20" ry="12" transform="rotate(-30 300 392)" fill="#3A3128"/>
 </svg>

@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "placeholders": "node scripts/generate-placeholders.mjs",
-    "astro": "astro"
+    "astro": "astro",
+    "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

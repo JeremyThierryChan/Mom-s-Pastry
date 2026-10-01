@@ -204,15 +204,31 @@ npm run placeholders   # 重新生成占位图（换了配色/构图才需要）
 
 ```
 public/images/
-├── hero/      首页大图 hero.svg、社交分享图 og.svg
+├── hero/      首页大图 hero.svg、社交分享图 og.svg（源文件）和 og.png（实际用的）
 ├── products/  产品图
 ├── story/     关于笑笑 / 制作过程
 └── journal/   手作记录配图
 ```
 
 - 换真实照片：压到宽 1200px 左右（jpg / webp），放进对应文件夹，改 `网站内容.md` 里的 `图片：` 和 `图片描述：`。
-- 不用手动裁图：比例由 `src/components/Photo.astro` 的 `aspect` 控制，换图不会让页面跳动。
-- 社交分享图（`分享图：`）**建议换成 1200×630 的 jpg/png** —— 微信 / Facebook 不认 SVG。
+- 不用手动裁图：比例由 `src/components/Photo.astro` 的 `ratio` 控制，换图不会让页面跳动。
+- 社交分享图（`分享图：`）**必须是 jpg / png，不能是 SVG** ——
+  微信 / 微博 / Twitter 都不渲染 SVG，分享出去会是一张空白图。
+
+### 图标和分享图
+
+都由 `npm run icons` 生成（`scripts/generate-icons.mjs`），产物直接提交进仓库：
+
+| 文件 | 用途 |
+| --- | --- |
+| `public/favicon.svg` | 浏览器标签页图标（现代浏览器），画的是俯视的经典蛋黄酥 |
+| `public/favicon.ico` | 老浏览器、微信内置浏览器；内含 16 / 32 / 48 三个尺寸 |
+| `public/apple-touch-icon.png` | iOS「添加到主屏幕」用的 180×180 |
+| `public/images/hero/og.png` | 社交分享图，1200×630，从 `og.svg` 渲染 |
+
+- 改图标：编辑 `scripts/generate-icons.mjs` 里的 `iconSvg()`，然后 `npm run icons`。
+- 图标里的芝麻**故意画得比真实比例大很多** —— 缩到 16px 时，按真实比例画的芝麻会完全看不见。
+- `.ico` 是脚本手工拼的（ICO 允许直接内嵌 PNG），所以没有引入任何新依赖。
 
 ### 现在的占位图是怎么画出来的
 
