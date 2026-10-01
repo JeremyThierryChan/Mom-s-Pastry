@@ -50,8 +50,11 @@
     font-size: 1rem;
     line-height: 1.75;
     -webkit-font-smoothing: antialiased;
-    /* 兜底：任何情况下都不出现横向滚动 */
-    overflow-x: hidden;
+    /* 兜底：任何情况下都不出现横向滚动。
+       用 clip 而不是 hidden —— hidden 会（按规范）传播到视口、
+       把 body 变成滚动容器，可能影响 position: sticky 的行为；
+       clip 只是单纯裁掉，不产生滚动容器。 */
+    overflow-x: clip;
   }
 
   h1,

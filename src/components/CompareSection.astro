@@ -12,21 +12,33 @@ interface Props {
 
 const { compare, products } = Astro.props;
 
-/**
- * 某一行在某款产品上的显示值。
- * 行名就是产品里的字段名（见 网站内容.md 的「对比行：」），
- * 只有「价格」需要特殊处理 —— 产品里存的是数字，要拼成「¥15 / 1枚」。
- */
-function valueOf(product: SiteContent['products']['items'][number], row: string): string {
-  if (row === '价格') return formatPrice(product.price, product.unit);
-  return product.fields[row] ?? '';
+type Product = SiteContent['products']['items'][number];
+
+/** 「价格 / 规格 / 状态」这种行直接显示文字，其余行按配料打勾 */
+const TEXT_ROWS: Record<string, (product: Product) => string> = {
+  价格: (product) => formatPrice(product.price, product.unit),
+  规格: (product) => product.unit,
+  状态: (product) => product.status,
+};
+
+/** 把「咸蛋黄、红豆沙」这种配料串拆干净，方便比对 */
+function ingredientList(product: Product): string[] {
+  return (product.ingredients ?? '')
+    .split(/[、,，/|]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 /**
- * 表格最小宽度：左边留 4.5rem 给行名，每款产品 8.7rem。
- * 产品多了表格就变宽、手机上的滑动距离也自动变长，不用手改。
+ * 这个产品有没有这一项配料。
+ * 用「包含」而不是「全等」，所以对比行写「蛋黄」也能匹配产品里的「咸蛋黄」。
  */
-const minWidth = `${(4.5 + products.length * 8.7).toFixed(1)}rem`;
+function hasIngredient(product: Product, row: string): boolean {
+  return ingredientList(product).some((item) => item.includes(row) || row.includes(item));
+}
+
+/** 表格最小宽度：左边 4.5rem 给行名，每款产品 6.5rem（格子里主要是勾叉，用不了太宽） */
+const minWidth = `${(4.5 + products.length * 6.5).toFixed(1)}rem`;
 ---
 
 <section id="compare" class="section">
@@ -40,27 +52,29 @@ const minWidth = `${(4.5 + products.length * 8.7).toFixed(1)}rem`;
             ← 左右滑动看全部 →
           </p>
 
-          {/* 手机放不下四列，就在这个容器里横向滑动；页面本身不会横向滚动 */}
-          <div class="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-            <table
-              class="w-full border-collapse text-left"
-              style={`min-width: ${minWidth}`}
-            >
+          {/* 手机放不下这么多列，就在这个容器里横向滑动。
+              注意别用负边距做「整屏出血」——那样会让 html 的 scrollWidth 虚高，
+              某些手机浏览器上会出现横向抖动。 */}
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-left" style={`min-width: ${minWidth}`}>
               <caption class="sr-only">{compare.title}</caption>
 
               <thead>
                 <tr>
                   <th scope="col" class="w-16 align-bottom sm:w-20" />
                   {products.map((product) => (
-                    <th scope="col" class="px-2 pb-5 align-bottom sm:px-3">
+                    <th scope="col" class="px-1.5 pb-5 align-bottom sm:px-2">
                       <Photo
                         src={product.image}
                         alt={product.imageAlt}
                         aspect="aspect-[4/3]"
                         frameClass="rounded-xl"
                       />
-                      <span class="mt-3 block font-serif text-base leading-snug text-ink">
+                      <span class="mt-3 block font-serif text-sm leading-snug text-ink sm:text-base">
                         {product.name}
+                      </span>
+                      <span class="mt-1.5 block font-serif text-sm text-yolk-deep">
+                        {formatPrice(product.price, product.unit)}
                       </span>
                       <span class="mt-2 block">
                         <StatusBadge status={product.status} />
@@ -75,15 +89,38 @@ const minWidth = `${(4.5 + products.length * 8.7).toFixed(1)}rem`;
                   <tr class="border-t border-line">
                     <th
                       scope="row"
-                      class="py-4 pr-3 align-top text-sm font-normal whitespace-nowrap text-clay sm:pr-4"
+                      class="py-3 pr-3 align-middle text-sm font-normal whitespace-nowrap text-clay sm:py-3.5 sm:pr-4"
                     >
                       {row}
                     </th>
-                    {products.map((product) => (
-                      <td class="px-2 py-4 align-top text-sm leading-relaxed text-cocoa sm:px-3">
-                        {valueOf(product, row)}
-                      </td>
-                    ))}
+                    {products.map((product) => {
+                      const textRow = TEXT_ROWS[row];
+                      if (textRow) {
+                        return (
+                          <td class="px-1.5 py-3 align-middle text-sm text-cocoa sm:px-2 sm:py-3.5">
+                            {textRow(product)}
+                          </td>
+                        );
+                      }
+                      const has = hasIngredient(product, row);
+                      return (
+                        <td class="px-1.5 py-3 align-middle sm:px-2 sm:py-3.5">
+                          <span class="sr-only">{has ? '有' : '没有'}</span>
+                          {has ? (
+                            <span
+                              class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-yolk-soft text-[13px] leading-none font-bold text-yolk-deep"
+                              aria-hidden="true"
+                            >
+                              ✓
+                            </span>
+                          ) : (
+                            <span class="text-clay/45" aria-hidden="true">
+                              —
+                            </span>
+                          )}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>

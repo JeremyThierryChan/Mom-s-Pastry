@@ -12,7 +12,7 @@ const { products, class: className = '' } = Astro.props;
 
 {
   products.length > 0 ? (
-    <ul class:list={['grid gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4', className]}>
+    <ul class:list={['grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3', className]}>
       {products.map((product) => (
         <li class="flex">
           <ProductCard product={product} />

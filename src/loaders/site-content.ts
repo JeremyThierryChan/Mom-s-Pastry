@@ -45,8 +45,7 @@ const KNOWN_KEYS = new Set([
   '图片描述',
   // 产品
   '一句话描述',
-  '内馅',
-  '口感',
+  '配料',
   '价格',
   '规格',
   '状态',
@@ -317,8 +316,7 @@ export function siteContentLoader(): Loader {
             items: products.items.map((entry) => ({
               name: entry.name,
               description: f(entry, '一句话描述'),
-              filling: f(entry, '内馅'),
-              taste: f(entry, '口感'),
+              ingredients: f(entry, '配料'),
               price: f(entry, '价格'),
               unit: f(entry, '规格'),
               status: f(entry, '状态'),

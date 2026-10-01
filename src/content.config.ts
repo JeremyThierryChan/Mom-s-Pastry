@@ -56,8 +56,8 @@ const site = defineCollection({
         z.object({
           name: z.string(),
           description: need('一句话描述'),
-          filling: z.string().optional(),
-          taste: z.string().optional(),
+          /** 配料，用「、」分开；对比表按这个自动判断有没有某一项 */
+          ingredients: z.string().optional(),
           price: looseNumber('价格'),
           unit: need('规格'),
           status: need('状态'),
