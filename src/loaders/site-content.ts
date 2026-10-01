@@ -218,8 +218,10 @@ export function siteContentLoader(): Loader {
   return {
     name,
     load: async (ctx) => {
-      await run(ctx);
+      // 先挂监听、再解析：万一这次解析失败（比如字段写错了），
+      // 改好文件之后也能自动重新读取，不用重启 dev server
       watchContentFile(ctx, () => run(ctx));
+      await run(ctx);
     },
   };
 
@@ -327,8 +329,10 @@ export function journalContentLoader(): Loader {
   return {
     name,
     load: async (ctx) => {
-      await run(ctx);
+      // 先挂监听、再解析：万一这次解析失败（比如字段写错了），
+      // 改好文件之后也能自动重新读取，不用重启 dev server
       watchContentFile(ctx, () => run(ctx));
+      await run(ctx);
     },
   };
 
