@@ -1,0 +1,319 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+   设计变量：奶油白 / 暖米色 / 浅棕 / 少量蛋黄黄
+   Tailwind v4 会据此生成 bg-cream、text-ink、border-crust、shadow-soft 等工具类
+   用 @theme static：即使某个变量只被自定义 CSS 用到（例如 .card 的阴影），
+   也会完整输出到 :root，不会被 tree-shaking 掉。
+------------------------------------------------------------------ */
+@theme static {
+  --color-cream: #fdfaf4;
+  --color-paper: #fffdf8;
+  --color-sand: #f6efe2;
+  --color-crust: #e8dcc6;
+  --color-line: #efe5d3;
+  --color-ink: #3b3229;
+  --color-cocoa: #5c4f41;
+  --color-clay: #8a7b68;
+  --color-yolk: #e4a82e;
+  --color-yolk-deep: #a9761a;
+  --color-yolk-soft: #fbf0d2;
+
+  --font-sans:
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans SC',
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --font-serif:
+    'Songti SC', 'Source Han Serif SC', 'Noto Serif SC', 'Hiragino Mincho ProN', 'SimSun',
+    ui-serif, Georgia, 'Times New Roman', serif;
+
+  --radius-card: 1.25rem;
+  --shadow-soft: 0 1px 2px rgb(74 58 38 / 0.04), 0 10px 26px -14px rgb(74 58 38 / 0.16);
+  --shadow-lift: 0 2px 5px rgb(74 58 38 / 0.05), 0 20px 44px -22px rgb(74 58 38 / 0.24);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-cocoa);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    /* 兜底：任何情况下都不出现横向滚动 */
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif);
+    color: var(--color-ink);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  /* 顶部导航是 sticky 的，锚点跳转时留出空间 */
+  section[id] {
+    scroll-margin-top: 5.5rem;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-yolk);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: var(--color-yolk-soft);
+    color: var(--color-ink);
+  }
+
+  img {
+    max-width: 100%;
+  }
+}
+
+@layer components {
+  /* 页面内容容器：手机优先，桌面端收窄到 72rem */
+  .wrap {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .wrap {
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .wrap {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  .section {
+    padding-block: 3.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .section {
+      padding-block: 5rem;
+    }
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -3rem;
+    z-index: 60;
+    background: var(--color-paper);
+    border: 1px solid var(--color-crust);
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    transition: top 0.15s ease;
+  }
+
+  .skip-link:focus {
+    top: 0.75rem;
+  }
+
+  /* 小标签：产品状态、区块小标题等 */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--color-clay);
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 9999px;
+    background: var(--color-yolk);
+    flex: none;
+  }
+
+  .display-title {
+    font-size: clamp(2.25rem, 8vw, 3.75rem);
+    line-height: 1.14;
+    letter-spacing: 0.04em;
+  }
+
+  .section-title {
+    font-size: clamp(1.5rem, 4.5vw, 2.125rem);
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+  }
+
+  .card {
+    background-color: var(--color-paper);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* 按钮 */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.25;
+    cursor: pointer;
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .btn-primary {
+    background-color: var(--color-yolk);
+    border-color: #d59c22;
+    color: #45310c;
+  }
+
+  .btn-primary:hover {
+    background-color: #dda01f;
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    border-color: var(--color-crust);
+    color: var(--color-ink);
+  }
+
+  .btn-ghost:hover {
+    background-color: var(--color-paper);
+    border-color: #dbc9a7;
+  }
+
+  /* 顶部导航链接 */
+  .nav-link {
+    display: inline-block;
+    padding: 0.4rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.9375rem;
+    color: var(--color-cocoa);
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .nav-link:hover {
+    color: var(--color-ink);
+    background-color: var(--color-sand);
+  }
+
+  .nav-link[aria-current='true'] {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  /* 图片：统一比例容器 + 细边框，替换真实照片时不影响布局 */
+  .photo-frame {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-line);
+    background-color: var(--color-sand);
+  }
+
+  .photo-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .photo-caption {
+    margin-top: 0.625rem;
+    font-size: 0.8125rem;
+    color: var(--color-clay);
+  }
+
+  /* 手作记录正文（不引入 typography 插件，保持轻量） */
+  .prose-handmade {
+    font-size: 1.0625rem;
+    line-height: 2;
+    color: var(--color-cocoa);
+  }
+
+  .prose-handmade > * + * {
+    margin-top: 1.35em;
+  }
+
+  .prose-handmade h2,
+  .prose-handmade h3 {
+    font-size: 1.25rem;
+    margin-top: 2.2em;
+  }
+
+  .prose-handmade strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  .prose-handmade a {
+    color: var(--color-yolk-deep);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .prose-handmade ul,
+  .prose-handmade ol {
+    padding-left: 1.4em;
+  }
+
+  .prose-handmade ul {
+    list-style: disc;
+  }
+
+  .prose-handmade ol {
+    list-style: decimal;
+  }
+
+  .prose-handmade blockquote {
+    border-left: 3px solid var(--color-yolk);
+    padding-left: 1rem;
+    color: var(--color-clay);
+  }
+}
+
+/* 移动端导航按钮：用一个小三角切换，不需要额外图标依赖 */
+#nav-toggle .icon-close {
+  display: none;
+}
+
+#nav-toggle[aria-expanded='true'] .icon-open {
+  display: none;
+}
+
+#nav-toggle[aria-expanded='true'] .icon-close {
+  display: block;
+}

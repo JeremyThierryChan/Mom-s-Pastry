@@ -1,0 +1,25 @@
+---
+import type { Product } from '../lib/content';
+import ProductCard from './ProductCard.astro';
+
+interface Props {
+  products: Product[];
+  class?: string;
+}
+
+const { products, class: className = '' } = Astro.props;
+---
+
+{
+  products.length > 0 ? (
+    <ul class:list={['grid gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4', className]}>
+      {products.map((product) => (
+        <li class="flex">
+          <ProductCard product={product} />
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class:list={['text-sm text-clay', className]}>今天还没有出炉的东西，晚点再来看看。</p>
+  )
+}

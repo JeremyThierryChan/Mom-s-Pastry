@@ -1,0 +1,45 @@
+---
+import { withBase } from '../lib/url';
+
+// 统一图片组件：
+// - 容器固定长宽比，替换真实照片后布局不会跳动
+// - src 走 withBase()，部署到 GitHub Pages 子路径时不用改内容
+// - alt 由调用方从内容文件里传进来，必填
+interface Props {
+  src: string;
+  alt: string;
+  /** Tailwind 比例工具类，决定图片占位框的长宽比 */
+  aspect?: string;
+  /** 外层 figure 的额外类名 */
+  class?: string;
+  /** 图片框的额外类名，例如卡片里需要 rounded-none border-0 */
+  frameClass?: string;
+  imgClass?: string;
+  loading?: 'lazy' | 'eager';
+  caption?: string;
+}
+
+const {
+  src,
+  alt,
+  aspect = 'aspect-[4/3]',
+  class: className,
+  frameClass,
+  imgClass,
+  loading = 'lazy',
+  caption,
+} = Astro.props;
+---
+
+<figure class:list={[className]}>
+  <div class:list={['photo-frame', aspect, frameClass]}>
+    <img
+      class:list={['photo-img', imgClass]}
+      src={withBase(src)}
+      alt={alt}
+      loading={loading}
+      decoding="async"
+    />
+  </div>
+  {caption && <figcaption class="photo-caption">{caption}</figcaption>}
+</figure>

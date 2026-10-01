@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/url';
+---
+
+<BaseLayout title="这一页不见了｜笑笑的蛋黄酥" noindex>
+  <div class="wrap py-20 text-center sm:py-28">
+    <p class="eyebrow">404</p>
+    <h1 class="section-title mt-4">这一页不见了</h1>
+    <p class="mt-4 text-base text-clay">可能是链接写错了，也可能这一炉已经卖完了。</p>
+    <div class="mt-8 flex justify-center">
+      <a class="btn btn-primary" href={withBase('/')}>回到首页</a>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,65 @@
+---
+import AboutSection from '../components/AboutSection.astro';
+import ContactSection from '../components/ContactSection.astro';
+import Hero from '../components/Hero.astro';
+import JournalCard from '../components/JournalCard.astro';
+import ProductGrid from '../components/ProductGrid.astro';
+import { SITE } from '../consts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getJournal, getProducts } from '../lib/content';
+import { absoluteUrl } from '../lib/url';
+
+const products = await getProducts();
+const journal = (await getJournal()).slice(0, 3);
+
+/** 给搜索引擎一点结构化信息，同时说明这是个小铺子而不是大平台 */
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE.name,
+  slogan: SITE.tagline,
+  description: SITE.description,
+  url: absoluteUrl('/', SITE.url),
+  image: absoluteUrl(SITE.ogImage, SITE.url),
+};
+---
+
+<BaseLayout>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <Hero />
+
+  <section id="today" class="section">
+    <div class="wrap">
+      <header class="max-w-2xl">
+        <p class="eyebrow">今日手作</p>
+        <h2 class="section-title mt-4">今天出炉的，都在这里</h2>
+        <p class="mt-4 text-base leading-relaxed text-clay">
+          每天做的量不多，当天现做。想订的话提前说一声，写着的状态就是今天的实际情况。
+        </p>
+      </header>
+
+      <ProductGrid products={products} class="mt-10 md:mt-12" />
+    </div>
+  </section>
+
+  <AboutSection />
+
+  <section id="journal" class="section border-y border-line bg-sand/50">
+    <div class="wrap">
+      <header class="max-w-2xl">
+        <p class="eyebrow">手作记录</p>
+        <h2 class="section-title mt-4">做的时候，随手记一点</h2>
+        <p class="mt-4 text-base leading-relaxed text-clay">
+          哪一炉烤得好，哪一次失败了，都记下来。
+        </p>
+      </header>
+
+      <ul class="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 md:mt-12">
+        {journal.map((entry) => <JournalCard entry={entry} />)}
+      </ul>
+    </div>
+  </section>
+
+  <ContactSection />
+</BaseLayout>

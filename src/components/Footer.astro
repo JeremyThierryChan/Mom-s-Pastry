@@ -1,0 +1,39 @@
+---
+import { NAV_LINKS, SITE } from '../consts';
+import { withBase } from '../lib/url';
+
+const year = new Date().getFullYear();
+const links = NAV_LINKS.filter((link) => link.hash !== '');
+---
+
+<footer class="border-t border-line bg-sand/60">
+  <div class="wrap py-10 sm:py-12">
+    <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <p class="flex items-center gap-2 font-serif text-lg text-ink">
+          <span class="h-2.5 w-2.5 rounded-full bg-yolk" aria-hidden="true"></span>
+          {SITE.name}
+        </p>
+        <p class="mt-2 text-sm text-clay">{SITE.tagline}</p>
+      </div>
+
+      <nav aria-label="页脚导航">
+        <ul class="flex flex-wrap gap-x-5 gap-y-0.5 text-sm">
+          {
+            links.map((link) => (
+              <li>
+                <a class="inline-block py-2 text-cocoa hover:text-ink" href={withBase(link.href)}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <p class="mt-10 border-t border-line pt-6 text-xs text-clay">
+      © {year} {SITE.name}　·　手作小铺，每天做的不多，卖完就收工。
+    </p>
+  </div>
+</footer>

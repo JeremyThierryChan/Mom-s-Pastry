@@ -1,0 +1,118 @@
+---
+import { NAV_LINKS, SITE } from '../consts';
+import { withBase } from '../lib/url';
+
+const base = import.meta.env.BASE_URL;
+const pathname = Astro.url.pathname;
+/** 去掉 base 前缀后的相对路径，用来判断当前页高亮 */
+const relative = (pathname.startsWith(base) ? pathname.slice(base.length) : pathname)
+  .replace(/^\/+/, '')
+  .replace(/\/+$/, '');
+const isHome = relative === '';
+const isJournal = relative.startsWith('journal');
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-line/80 bg-cream/85 backdrop-blur-md supports-[backdrop-filter]:bg-cream/70"
+>
+  <div class="wrap flex h-16 items-center justify-between gap-3">
+    <a
+      href={withBase('/')}
+      class="flex items-center gap-2 py-1 font-serif text-lg tracking-wide text-ink sm:text-xl"
+    >
+      <span class="h-2.5 w-2.5 flex-none rounded-full bg-yolk" aria-hidden="true"></span>
+      {SITE.name}
+    </a>
+
+    <nav class="hidden md:block" aria-label="主导航">
+      <ul class="flex items-center gap-0.5">
+        {
+          NAV_LINKS.map((link) => {
+            const active = link.hash === '' ? isHome : link.hash === '#journal' && isJournal;
+            return (
+              <li>
+                <a
+                  class="nav-link"
+                  href={withBase(link.href)}
+                  aria-current={active ? 'true' : undefined}
+                >
+                  {link.label}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <button
+      id="nav-toggle"
+      type="button"
+      class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-crust bg-paper text-ink md:hidden"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      aria-label="打开导航菜单"
+    >
+      <svg
+        class="h-5 w-5"
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path class="icon-open" d="M3.5 6h13M3.5 10h13M3.5 14h13"></path>
+        <path class="icon-close" d="M5.5 5.5l9 9M14.5 5.5l-9 9"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div id="mobile-nav" class="hidden border-t border-line bg-cream md:hidden">
+    <nav class="wrap py-2" aria-label="移动端导航">
+      <ul>
+        {
+          NAV_LINKS.map((link) => (
+            <li>
+              <a
+                class="block rounded-xl px-3 py-3 text-base text-cocoa hover:bg-sand hover:text-ink"
+                href={withBase(link.href)}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const panel = document.getElementById('mobile-nav');
+
+  if (toggle && panel) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? '关闭导航菜单' : '打开导航菜单');
+      panel.classList.toggle('hidden', !open);
+    };
+
+    toggle.addEventListener('click', () => {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    panel.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) setOpen(false);
+    });
+  }
+</script>

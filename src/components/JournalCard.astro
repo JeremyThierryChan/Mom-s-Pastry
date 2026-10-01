@@ -1,0 +1,36 @@
+---
+import { formatDate, isoDate } from '../lib/format';
+import { journalHref, type JournalEntry } from '../lib/content';
+import { withBase } from '../lib/url';
+import Photo from './Photo.astro';
+
+interface Props {
+  entry: JournalEntry;
+}
+
+const { entry } = Astro.props;
+const { title, date, summary, image, imageAlt } = entry.data;
+---
+
+<li class="card flex flex-col overflow-hidden transition-shadow hover:shadow-lift">
+  <a href={withBase(journalHref(entry.id))} class="flex h-full flex-col">
+    {
+      image && (
+        <Photo
+          src={image}
+          alt={imageAlt ?? title}
+          aspect="aspect-[16/10]"
+          frameClass="rounded-none border-0"
+        />
+      )
+    }
+    <div class="flex flex-1 flex-col p-5 sm:p-6">
+      <time datetime={isoDate(date)} class="text-xs tracking-[0.15em] text-clay">
+        {formatDate(date)}
+      </time>
+      <h3 class="mt-3 font-serif text-lg leading-snug">{title}</h3>
+      <p class="mt-2 text-sm leading-relaxed text-clay">{summary}</p>
+      <span class="mt-auto pt-5 text-sm text-yolk-deep">读一读 →</span>
+    </div>
+  </a>
+</li>

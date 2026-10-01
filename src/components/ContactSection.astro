@@ -1,0 +1,67 @@
+---
+import { CONTACT, SITE } from '../consts';
+---
+
+<section id="contact" class="section">
+  <div class="wrap">
+    <div class="card mx-auto max-w-3xl px-6 py-10 text-center sm:px-10 sm:py-14">
+      <p class="eyebrow">联系 · 预订</p>
+      <h2 class="section-title mt-4">想吃蛋黄酥？</h2>
+      <p class="mt-4 text-base sm:text-lg">可以联系{SITE.ownerName}预订。</p>
+      <p class="mt-2 text-sm text-clay">{CONTACT.hours}</p>
+
+      <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-copy-wechat
+          data-wechat={CONTACT.wechat}
+          aria-label={`复制微信号 ${CONTACT.wechat}`}
+        >
+          微信联系
+        </button>
+        <a class="btn btn-ghost" href={`tel:${CONTACT.phone}`}>电话联系</a>
+      </div>
+
+      <dl
+        class="mt-9 flex flex-col items-center gap-3 border-t border-line pt-7 text-sm sm:flex-row sm:justify-center sm:gap-10"
+      >
+        <div class="flex items-center gap-2">
+          <dt class="text-clay">微信</dt>
+          <dd class="font-medium text-ink">{CONTACT.wechat}</dd>
+        </div>
+        <div class="flex items-center gap-2">
+          <dt class="text-clay">电话</dt>
+          <dd class="font-medium text-ink">{CONTACT.phone}</dd>
+        </div>
+      </dl>
+
+      <p class="mt-6 text-xs leading-relaxed text-clay">
+        目前只接受微信或电话预订，暂时不支持在线支付。{CONTACT.delivery}。
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-copy-wechat]');
+
+  buttons.forEach((button) => {
+    const original = button.textContent?.trim() ?? '微信联系';
+
+    button.addEventListener('click', async () => {
+      const wechat = button.dataset.wechat ?? '';
+
+      try {
+        await navigator.clipboard.writeText(wechat);
+        button.textContent = `已复制：${wechat}`;
+      } catch {
+        button.textContent = `微信：${wechat}`;
+      }
+
+      window.setTimeout(() => {
+        button.textContent = original;
+      }, 2600);
+    });
+  });
+</script>

@@ -1,0 +1,29 @@
+---
+import { PRODUCT_STATUS, type ProductStatusKey } from '../consts';
+
+interface Props {
+  status: ProductStatusKey;
+}
+
+const { status } = Astro.props;
+const { label } = PRODUCT_STATUS[status];
+
+/** 状态配色全部落在暖色系里，避免电商平台那种高饱和色块 */
+const TONES: Record<ProductStatusKey, { badge: string; dot: string }> = {
+  available: { badge: 'border-[#f0dfae] bg-[#fbf0d2] text-[#8a6212]', dot: 'bg-[#e4a82e]' },
+  limited: { badge: 'border-[#ebd6be] bg-[#f7e9da] text-[#8a5a2b]', dot: 'bg-[#c98a4b]' },
+  soldout: { badge: 'border-[#e3ddd2] bg-[#f2eee7] text-[#8a7b68]', dot: 'bg-[#b6a892]' },
+};
+
+const tone = TONES[status];
+---
+
+<span
+  class:list={[
+    'inline-flex items-center rounded-full border px-2.5 py-1 text-xs leading-none font-medium',
+    tone.badge,
+  ]}
+>
+  <span class:list={['mr-1.5 h-1.5 w-1.5 rounded-full', tone.dot]} aria-hidden="true"></span>
+  {label}
+</span>
