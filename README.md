@@ -139,6 +139,12 @@ npm run placeholders   # 重新生成占位图（换了配色/构图才需要）
 > 本地预览要带子路径：<http://localhost:4321/Mom-s-Pastry/>（根路径 `/` 会是 404，这是正常的）。
 > 因为仓库名不是 `<用户名>.github.io`，线上就是部署在 `/Mom-s-Pastry/` 这个子路径下。
 
+**改了 `网站内容.md` 但页面没变？** 先 `Cmd+Shift+R` 强刷；还是没变就重启 `npm run dev`。
+
+> ⚠️ **不要**在 `npm run dev` 还开着的时候删 `.astro/` 或 `node_modules/.astro/`
+> （比如手动清缓存、或者跑 `rm -rf .astro`）—— 那会把 dev server 的内容层弄坏，
+> 之后它既不更新内容、也不报错，只是安静地一直显示旧页面。遇到就先停掉 dev server 再清。
+
 ---
 
 ## 三、项目结构
