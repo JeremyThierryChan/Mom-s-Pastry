@@ -151,6 +151,10 @@ function cutFacePath(cx, baseY, R, s = 1, lift = 0) {
 ------------------------------------------------------------------ */
 
 /** 各层相对半宽的缩放：决定每层有多少厚 */
+/** 豆沙的外沿：有肉松的地方让出肉松的厚度，没肉松的地方直接顶到酥皮内侧 */
+const PASTE_THIN = 0.76;
+const PASTE_FULL = 0.885;
+
 const SCALE = {
   layer: 0.955, // 酥皮层次的那条弧线
   floss: 0.9, // 肉松外沿（正好贴在酥皮内侧）
@@ -161,34 +165,85 @@ const SCALE = {
 const LIFT = { layer: 0.02, floss: 0.02, paste: 0.05 };
 
 /**
- * 肉松：夹在豆沙和酥皮之间的一层，整圈都铺。
- * 真实做法是拿肉松把豆沙球裹一圈再包酥皮，所以切开是完整的一环。
- * 先铺一层底色，再顺着圆周切线方向撒一把深浅纤维，看起来才像「松」而不是一块土。
+ * 轮廓上的一个点。
+ * @param {number} s 缩放（1 = 最外层酥皮）
+ * @param {number} lift 底边上移量
+ * @param {number} deg 屏幕角度：0° = 右，90° = 下，270° = 上
  */
-function flossRing(cx, baseY, R, seed) {
-  const rand = makeRandom(seed + 91);
-  const cy = baseY - LIFT.floss * R - FLAT * R * SCALE.floss;
+function shapePoint(cx, baseY, R, s, lift, deg) {
+  const r = R * s;
+  const cy = baseY - lift * R - FLAT * r;
+  const phi = (deg * Math.PI) / 180;
+  return [cx + Math.cos(phi) * r, cy + Math.sin(phi) * r];
+}
 
-  const fibers = Array.from({ length: 46 }, () => {
-    const phi = rand() * Math.PI * 2;
-    const rr = R * (0.775 + rand() * 0.115);
-    const x = cx + Math.cos(phi) * rr;
-    const y = cy + Math.sin(phi) * rr;
-    // 圆周的切线方向 = 屏幕角度 phi + 90°
-    const rot = phi + Math.PI / 2 + (rand() - 0.5) * 0.9;
-    const half = (R * (0.045 + rand() * 0.06)) / 2;
+/**
+ * 按角度取不同缩放生成轮廓：豆沙靠这一招「在没肉松的地方长出来」。
+ * sAt(deg) 返回该角度上的缩放；角度含义同 shapePoint（270° 是顶点）。
+ * 注意 lift 传的是**比例**（内部会乘 R），和 cutFacePath 的绝对像素不一样。
+ */
+function shapedPath(cx, baseY, R, lift, sAt, steps = 72) {
+  const from = 180 - FLAT_DEG;
+  const to = 360 + FLAT_DEG;
+  const pts = [];
+  for (let i = 0; i <= steps; i++) {
+    const deg = from + ((to - from) * i) / steps;
+    pts.push(shapePoint(cx, baseY, R, sAt(deg), lift, deg));
+  }
+  return `${pts.map(([x, y], i) => `${i ? 'L' : 'M'} ${r1(x)} ${r1(y)}`).join(' ')} Z`;
+}
+
+/** 两条同形状轮廓之间的一段环（用来只铺顶部那一段） */
+function bandPath(cx, baseY, R, outer, inner, fromDeg, toDeg, steps = 40) {
+  const outerPts = [];
+  const innerPts = [];
+  for (let i = 0; i <= steps; i++) {
+    const deg = fromDeg + ((toDeg - fromDeg) * i) / steps;
+    outerPts.push(shapePoint(cx, baseY, R, outer.s, outer.lift, deg));
+    innerPts.push(shapePoint(cx, baseY, R, inner.s, inner.lift, deg));
+  }
+  const head = outerPts.map(([x, y], i) => `${i ? 'L' : 'M'} ${r1(x)} ${r1(y)}`).join(' ');
+  const tail = innerPts
+    .reverse()
+    .map(([x, y]) => `L ${r1(x)} ${r1(y)}`)
+    .join(' ');
+  return `${head} ${tail} Z`;
+}
+
+/**
+ * 肉松：夹在豆沙和酥皮之间，但**只铺顶部那一段**，不是一整圈。
+ * 真实做法是把肉松抹在酥皮上、放上豆沙球再包起来，所以下面那半圈是收口的地方，
+ * 基本没有肉松。
+ * 先铺一层底色，再顺着弧的切线方向撒一把深浅纤维，看起来才像「松」而不是一块土。
+ */
+function flossBand(cx, baseY, R, seed) {
+  const from = 192; // 左端（稍过水平线）
+  const to = 348; // 右端
+  const rand = makeRandom(seed + 91);
+
+  const outer = { s: SCALE.floss, lift: LIFT.floss };
+  const inner = { s: SCALE.paste, lift: LIFT.paste };
+  const outline = bandPath(cx, baseY, R, outer, inner, from, to);
+  const clipId = `floss-${Math.round(cx)}-${Math.round(baseY)}-${Math.round(R)}`;
+
+  const fibers = Array.from({ length: 34 }, () => {
+    const deg = from + 5 + rand() * (to - from - 10);
+    const s = SCALE.paste + 0.02 + rand() * (SCALE.floss - SCALE.paste - 0.04);
+    // 内外轮廓的 lift 不同，这里按比例插值
+    const lift = LIFT.paste + (LIFT.floss - LIFT.paste) * rand();
+    const [x, y] = shapePoint(cx, baseY, R, s, lift, deg);
+    // 顺着弧的切线方向
+    const rot = ((deg + 90 + (rand() - 0.5) * 46) * Math.PI) / 180;
+    const half = (R * (0.04 + rand() * 0.055)) / 2;
     const dx = Math.cos(rot) * half;
     const dy = Math.sin(rot) * half;
     const tone = rand() > 0.45 ? '#DDAF74' : '#A9713A';
     return `<line x1="${r1(x - dx)}" y1="${r1(y - dy)}" x2="${r1(x + dx)}" y2="${r1(y + dy)}" stroke="${tone}" stroke-width="${r1(R * 0.012)}" stroke-linecap="round" opacity="0.8"/>`;
   }).join('');
 
-  const clipId = `floss-${Math.round(cx)}-${Math.round(baseY)}-${Math.round(R)}`;
-  const outline = cutFacePath(cx, baseY, R, SCALE.floss, LIFT.floss * R);
-
   return `<clipPath id="${clipId}"><path d="${outline}"/></clipPath>
     <path d="${outline}" fill="#C08A4E"/>
-    <path d="${outline}" fill="none" stroke="#AC7638" stroke-width="${r1(R * 0.01)}" opacity="0.65"/>
+    <path d="${outline}" fill="none" stroke="#AC7638" stroke-width="${r1(R * 0.009)}" opacity="0.6"/>
     <g clip-path="url(#${clipId})">${fibers}</g>`;
 }
 
@@ -277,6 +332,23 @@ function cutaway(
   const yolkR = R * SCALE.yolk;
   const yolkCy = cyBase - R * 0.06;
 
+  // 豆沙的外沿随角度变化：顶部那段让位给肉松，其余地方顶到酥皮内侧。
+  // 两种半径之间平滑过渡，不然会出现一个折角。
+  const FLOSS_HALF = 78; // 肉松覆盖以顶点为中心 ±78°
+  const BLEND = 16; // 过渡宽度
+  // 没有肉松的款式（比如莲蓉酥）整圈都顶到酥皮内侧，外壳才是薄的
+  const pasteScale = (deg) => {
+    if (!withFloss) return PASTE_FULL;
+    let d = Math.abs(deg - 270);
+    if (d > 180) d = 360 - d;
+    if (d <= FLOSS_HALF - BLEND) return PASTE_THIN;
+    if (d >= FLOSS_HALF + BLEND) return PASTE_FULL;
+    const t = (d - (FLOSS_HALF - BLEND)) / (2 * BLEND);
+    const e = t * t * (3 - 2 * t); // smoothstep，免得出现折角
+    return PASTE_THIN + (PASTE_FULL - PASTE_THIN) * e;
+  };
+  const pastePath = shapedPath(cx, baseY, R, LIFT.paste, pasteScale);
+
   // 豆沙里的小颗粒，让色块不那么死板。
   // 有蛋黄时只撒在蛋黄外侧那一圈；没有蛋黄（比如莲蓉酥）就铺满整个内圈
   const crumbInner = withYolk ? 0.46 : 0.14;
@@ -299,8 +371,8 @@ function cutaway(
         <path d="${cutFacePath(cx, baseY, R)}" fill="#EFDCB6" stroke="#DCC69E" stroke-width="${r1(R * 0.018)}"/>
         <path d="${cutFacePath(cx, baseY, R, SCALE.layer, LIFT.layer * R)}" fill="none" stroke="#E4D0A8" stroke-width="${r1(R * 0.013)}"/>
         ${eggWash(cx, baseY, R, washId)}
-        ${withFloss ? flossRing(cx, baseY, R, seed) : ''}
-        <path d="${cutFacePath(cx, baseY, R, SCALE.paste, LIFT.paste * R)}" fill="${paste}" stroke="${pasteDark}" stroke-width="${r1(R * 0.012)}"/>
+        ${withFloss ? flossBand(cx, baseY, R, seed) : ''}
+        <path d="${pastePath}" fill="${paste}" stroke="${pasteDark}" stroke-width="${r1(R * 0.012)}"/>
         ${crumbs}
         ${
           withYolk
