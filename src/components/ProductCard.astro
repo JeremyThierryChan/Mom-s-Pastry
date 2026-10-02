@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { product } = Astro.props;
-const { name, description, price, unit, status, image, imageAlt, note } = product;
+const { name, description, price, unit, weight, status, image, imageAlt, note } = product;
 ---
 
 <article class="card flex h-full w-full flex-col overflow-hidden">
@@ -21,9 +21,14 @@ const { name, description, price, unit, status, image, imageAlt, note } = produc
     <h3 class="mt-3 font-serif text-lg leading-snug">{name}</h3>
     <p class="mt-2 text-sm leading-relaxed text-clay">{description}</p>
     {note && <p class="mt-2 text-xs leading-relaxed text-clay/80">{note}</p>}
-    <p class="mt-auto border-t border-line pt-4 font-serif text-base text-ink">
-      <span class="sr-only">价格：</span>
-      {formatPrice(price, unit)}
-    </p>
+    {/* 价格区：价格和净重分两行、都居中。
+        挤成一行（¥15 / 1枚（净重：70g左右））太长会折得很难看 */}
+    <div class="mt-auto border-t border-line pt-4 text-center">
+      <p class="font-serif text-base text-ink">
+        <span class="sr-only">价格：</span>
+        {formatPrice(price, unit)}
+      </p>
+      {weight && <p class="mt-1 text-xs text-clay">（净重：{weight}）</p>}
+    </div>
   </div>
 </article>

@@ -61,6 +61,8 @@ const site = defineCollection({
           /** 价格可以是数字也可以是文字（如「详讯」），拼文案交给 formatPrice */
           price: need('价格'),
           unit: need('规格'),
+          /** 净重，例如「70g左右」；卡片上单独一行显示成（净重：70g左右） */
+          weight: z.string().optional(),
           status: need('状态'),
           image: need('图片'),
           imageAlt: need('图片描述'),

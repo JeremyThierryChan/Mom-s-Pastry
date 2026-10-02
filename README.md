@@ -43,6 +43,7 @@ git push
 配料：咸蛋黄、红豆沙、黑芝麻
 价格：48
 规格：6枚
+净重：70g左右                    ← 卡片上单独一行居中显示成（净重：70g左右）
 状态：今日可订
 图片：/images/products/original.svg
 图片描述：原味蛋黄酥的照片
@@ -176,6 +177,13 @@ npm run placeholders   # 重新生成占位图（换了配色/构图才需要）
 > 因为仓库名不是 `<用户名>.github.io`，线上就是部署在 `/Mom-s-Pastry/` 这个子路径下。
 
 **改了 `网站内容.md` 但页面没变？** 先 `Cmd+Shift+R` 强刷；还是没变就重启 `npm run dev`。
+
+**改了这些必须重启 `npm run dev`**（生产构建不受影响，只是开发服务器认不出来）：
+- 新增了组件文件（`.astro`）→ 报 `Could not import ...`
+- 改了 `src/content.config.ts` 的字段定义 → 页面内容会停在旧数据，不报错但也不更新
+- 改了 `astro.config.mjs`
+
+前端样式和文案的改动会热更新，不用重启。
 
 > ⚠️ **不要**在 `npm run dev` 还开着的时候删 `.astro/` 或 `node_modules/.astro/`
 > （比如手动清缓存、或者跑 `rm -rf .astro`）—— 那会把 dev server 的内容层弄坏，
