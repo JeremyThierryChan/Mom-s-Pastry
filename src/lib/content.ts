@@ -70,14 +70,15 @@ export function journalHref(entry: JournalEntry): string {
  * 被隐藏的区块不会出现在导航里（否则会跳到不存在的锚点）。
  */
 export function navLinks(site: SiteContent): NavLink[] {
-  // 顺序跟着首页的区块顺序走：
-  // 今日手作 → 对比 → 预订须知 → 关于笑笑 →（记录）→ 联系。
+  // 顺序跟着首页的区块顺序走：今日手作 → 预订须知 → 关于笑笑 →（记录）→ 联系。
   // 每一项的文字取自那个区块的「小标签：」，所以改内容文件里的标签，
   // 导航栏跟着变，不用回来改代码。
+  //
+  // 「对比」故意不列进来：它紧跟在产品卡片下面，滚动时自然会看到，
+  // 导航里再放一个入口反而多余。
   const links: NavLink[] = [
     { label: '首页', href: '/', hash: '' },
     { label: site.products.eyebrow, href: '/#today', hash: '#today' },
-    { label: site.compare.eyebrow, href: '/#compare', hash: '#compare' },
     { label: site.booking.eyebrow, href: '/#booking', hash: '#booking' },
     { label: site.about.eyebrow, href: '/#about', hash: '#about' },
   ];
