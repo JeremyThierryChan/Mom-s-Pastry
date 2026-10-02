@@ -79,7 +79,6 @@ export function navLinks(site: SiteContent): NavLink[] {
   const links: NavLink[] = [
     { label: '首页', href: '/', hash: '' },
     { label: site.products.eyebrow, href: '/#today', hash: '#today' },
-    { label: site.booking.eyebrow, href: '/#booking', hash: '#booking' },
     { label: site.about.eyebrow, href: '/#about', hash: '#about' },
   ];
 
@@ -88,6 +87,8 @@ export function navLinks(site: SiteContent): NavLink[] {
   }
 
   links.push({ label: site.contact.eyebrow, href: '/#contact', hash: '#contact' });
+  // 预订须知排在最后，跟着首页的位置走（它是页面最后一个区块）
+  links.push({ label: site.booking.eyebrow, href: '/#booking', hash: '#booking' });
   return links;
 }
 

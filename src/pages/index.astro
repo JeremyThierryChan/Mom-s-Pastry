@@ -50,8 +50,6 @@ const jsonLd = {
     )
   }
 
-  {site.booking.visible && <BookingSection booking={site.booking} />}
-
   <AboutSection about={site.about} />
 
   {/* 顾客反馈放在「关于笑笑」之后：先讲人，再让顾客说话，最后才是联系下单 */}
@@ -76,4 +74,8 @@ const jsonLd = {
   }
 
   <ContactSection contact={site.contact} />
+
+  {/* 预订须知放在最后：先看有什么、谁做的、别人怎么说，然后是联系方式，
+      规则作为下单前的补充说明收尾 */}
+  {site.booking.visible && <BookingSection booking={site.booking} />}
 </BaseLayout>
