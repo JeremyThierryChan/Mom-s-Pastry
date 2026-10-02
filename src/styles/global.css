@@ -7,6 +7,11 @@
    也会完整输出到 :root，不会被 tree-shaking 掉。
 ------------------------------------------------------------------ */
 @theme static {
+  /* 顶部导航的实际高度。锚点跳转靠它让开表头 ——
+     跳转后区块顶边正好落在表头下沿，不会露出上一区块的边。
+     实测各断点都是 65px；改表头的内边距或字号时要跟着改这里。 */
+  --header-h: 4.0625rem;
+
   --color-cream: #fdfaf4;
   --color-paper: #fffdf8;
   --color-sand: #f6efe2;
@@ -70,9 +75,11 @@
     text-wrap: balance;
   }
 
-  /* 顶部导航是 sticky 的，锚点跳转时留出空间 */
+  /* 顶部导航是 sticky 的，锚点跳转要让开它。
+     这里正好让开表头高度、不留额外余量：区块自身有 56~80px 顶部内边距，
+     标题本来就离得远，再多留就会把上一区块的底边露出一条。 */
   section[id] {
-    scroll-margin-top: 5.5rem;
+    scroll-margin-top: var(--header-h);
   }
 
   :focus-visible {
