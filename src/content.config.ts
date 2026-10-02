@@ -58,12 +58,15 @@ const site = defineCollection({
           description: need('一句话描述'),
           /** 配料，用「、」分开；对比表按这个自动判断有没有某一项 */
           ingredients: z.string().optional(),
-          price: looseNumber('价格'),
+          /** 价格可以是数字也可以是文字（如「详讯」），拼文案交给 formatPrice */
+          price: need('价格'),
           unit: need('规格'),
           status: need('状态'),
           image: need('图片'),
           imageAlt: need('图片描述'),
           note: z.string().optional(),
+          /** 「对比：否」时不参与对比表 —— 定制类没有固定配料，列进去没意义 */
+          inCompare: z.boolean(),
           /** 这一条的所有字段（中文名 → 值），对比表按行名取 */
           fields: z.record(z.string(), z.string()),
         }),

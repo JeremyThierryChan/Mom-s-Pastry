@@ -47,6 +47,7 @@ const KNOWN_KEYS = new Set([
   '一句话描述',
   '配料',
   '价格',
+  '对比',
   '规格',
   '状态',
   '小备注',
@@ -323,6 +324,7 @@ export function siteContentLoader(): Loader {
               image: f(entry, '图片'),
               imageAlt: f(entry, '图片描述'),
               note: f(entry, '小备注'),
+              inCompare: toBool(f(entry, '对比'), true),
               // 原样保留这一条的所有字段（中文名 → 值），
               // 「## 对比」区块里写什么行名就取什么字段，方便以后加对比项
               fields: entry.fields,

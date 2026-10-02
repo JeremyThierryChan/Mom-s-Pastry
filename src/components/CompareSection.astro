@@ -10,7 +10,10 @@ interface Props {
   products: SiteContent['products']['items'];
 }
 
-const { compare, products } = Astro.props;
+const { compare, products: allProducts } = Astro.props;
+
+// 「对比：否」的产品不进对比表（比如定制产品，它没有固定配料）
+const products = allProducts.filter((product) => product.inCompare);
 
 type Product = SiteContent['products']['items'][number];
 
@@ -101,12 +104,12 @@ const minWidth = `${(4.5 + products.length * 7).toFixed(1)}rem`;
               <tbody>
                 {compare.rows.map((row) => (
                   <tr>
+                    {/* 行名整列吸顶：手机横向滑动时配料名一直看得见。
+                        必须给不透明底色，否则滑过去的内容会透出来；
+                        右边一条细线，暗示下面还有内容。 */}
                     <th
                       scope="row"
-                      {/* 行名整列吸顶：手机横向滑动时配料名一直看得见。
-                          必须给不透明底色，否则滑过去的内容会透出来。
-                          右边一条细线，暗示下面还有内容。 */}
-                        class="sticky left-0 z-10 border-t border-r border-line bg-cream py-3 pr-3 align-middle text-sm font-normal whitespace-nowrap text-clay sm:py-3.5 sm:pr-4"
+                      class="sticky left-0 z-10 border-t border-r border-line bg-cream py-3 pr-3 align-middle text-sm font-normal whitespace-nowrap text-clay sm:py-3.5 sm:pr-4"
                     >
                       {row}
                     </th>

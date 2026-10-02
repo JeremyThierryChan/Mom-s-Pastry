@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 占位图，可直接替换：public/images/products/custom.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="定制产品">
+  <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FCF8F0"/>
+        <stop offset="1" stop-color="#F3E9D8"/>
+      </linearGradient>
+      <radialGradient id="glow" cx="50%" cy="42%" r="62%">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.85"/>
+        <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+      </radialGradient>
+      <!-- 咸蛋黄：比莲蓉馅深一档的橙黄。原来用浅金色，
+           和莲蓉馅的亮度只差 7，小图上「莲蓉蛋黄酥」和「莲蓉酥」几乎一样 -->
+      <radialGradient id="yolk" cx="36%" cy="32%" r="72%">
+        <stop offset="0" stop-color="#DFA022"/>
+        <stop offset="1" stop-color="#A96608"/>
+      </radialGradient>
+      <radialGradient id="wash" cx="40%" cy="34%" r="70%">
+        <stop offset="0" stop-color="#E9BE84" stop-opacity="0.95"/>
+        <stop offset="1" stop-color="#D9A75E" stop-opacity="0.75"/>
+      </radialGradient>
+    </defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+    <ellipse cx="600" cy="378" rx="660" ry="450" fill="url(#glow)"/>
+    <circle cx="1127.4" cy="107.7" r="2.1" fill="#C9B48F" opacity="0.16"/><circle cx="349.2" cy="848.4" r="4.8" fill="#C9B48F" opacity="0.16"/><circle cx="501.6" cy="312" r="4.3" fill="#C9B48F" opacity="0.16"/><circle cx="884.6" cy="673.6" r="1.9" fill="#C9B48F" opacity="0.16"/><circle cx="798.2" cy="508" r="2.6" fill="#C9B48F" opacity="0.16"/><circle cx="742.2" cy="190.4" r="4.3" fill="#C9B48F" opacity="0.16"/><circle cx="16.9" cy="95.7" r="1.6" fill="#C9B48F" opacity="0.16"/><circle cx="322.1" cy="598.9" r="2.8" fill="#C9B48F" opacity="0.16"/><circle cx="957.8" cy="275" r="2.5" fill="#C9B48F" opacity="0.16"/><circle cx="24.2" cy="399" r="2.1" fill="#C9B48F" opacity="0.16"/><circle cx="421" cy="446" r="3" fill="#C9B48F" opacity="0.16"/><circle cx="248.4" cy="790.9" r="3.2" fill="#C9B48F" opacity="0.16"/><circle cx="6.4" cy="8.7" r="4.2" fill="#C9B48F" opacity="0.16"/><circle cx="195" cy="274.4" r="3.9" fill="#C9B48F" opacity="0.16"/><circle cx="114" cy="163" r="3.9" fill="#C9B48F" opacity="0.16"/><circle cx="263.7" cy="49.5" r="2" fill="#C9B48F" opacity="0.16"/><circle cx="1143.9" cy="309" r="3.1" fill="#C9B48F" opacity="0.16"/><circle cx="854.7" cy="416.4" r="1.9" fill="#C9B48F" opacity="0.16"/><circle cx="1096" cy="746.7" r="3.1" fill="#C9B48F" opacity="0.16"/><circle cx="1167.8" cy="774.9" r="4.8" fill="#C9B48F" opacity="0.16"/><circle cx="370.3" cy="876" r="4.9" fill="#C9B48F" opacity="0.16"/><circle cx="403.2" cy="525" r="5" fill="#C9B48F" opacity="0.16"/><circle cx="566.8" cy="97" r="3" fill="#C9B48F" opacity="0.16"/><circle cx="160.9" cy="866.8" r="3.7" fill="#C9B48F" opacity="0.16"/><circle cx="885.5" cy="509.6" r="1.7" fill="#C9B48F" opacity="0.16"/><circle cx="840.7" cy="300.3" r="1.9" fill="#C9B48F" opacity="0.16"/>
+        <g>
+      <ellipse cx="600" cy="843.3" rx="422.3" ry="62.1" fill="#B79B73" opacity="0.17"/>
+      <path d="M 1026.6 391.2 Q 1035.8 450 1019.4 506.8 Q 1003 563.6 975.8 614.4 Q 948.7 665.1 912.3 710.4 Q 875.8 755.6 825.7 787.3 Q 775.5 819 717.6 827.2 Q 659.7 835.5 599.2 835.5 Q 538.7 835.5 475.2 835.5 Q 411.6 835.5 356.5 808.2 Q 301.4 780.9 271.3 726.1 Q 241.2 671.3 231.2 614.1 Q 221.2 556.8 214.5 503.4 Q 207.8 450 207.3 394.6 Q 206.8 339.2 226.7 285.6 Q 246.6 232 285.9 188.8 Q 325.2 145.5 374.6 112.7 Q 423.9 79.9 481.4 60.6 Q 538.8 41.3 599.2 46.5 Q 659.7 51.6 711.7 78.7 Q 763.8 105.7 808.2 137.9 Q 852.7 170 898.1 204.1 Q 943.5 238.1 980.4 285.2 Q 1017.3 332.4 1026.6 391.2 Z" fill="#F2E1BE" stroke="#DFC9A2" stroke-width="9.1" stroke-dasharray="53.8 35.2"/>
+      <circle cx="600" cy="450" r="356" fill="none" stroke="#D9BE8E" stroke-width="14.5" stroke-dasharray="70.4 45.5" opacity="0.9"/>
+      <path d="M 864.5 391 Q 869.8 429.3 861.5 466.7 Q 853.1 504.1 832.9 536.2 Q 812.8 568.2 790.2 598.5 Q 767.6 628.7 740.6 661.4 Q 713.6 694.2 673.7 694.2 Q 633.8 694.2 588.4 694.2 Q 543 694.2 506.1 686.2 Q 469.2 678.2 439.5 652.2 Q 409.8 626.3 382.3 599.6 Q 354.8 572.9 336.3 539.1 Q 317.7 505.4 312.2 467.3 Q 306.8 429.3 309.2 390.4 Q 311.7 351.5 323.6 312.7 Q 335.5 273.8 364.5 244 Q 393.4 214.2 433.8 202.6 Q 474.3 191.1 512.8 189.1 Q 551.3 187.2 588.3 182.1 Q 625.4 177 666.8 176.3 Q 708.2 175.7 746.1 193.7 Q 783.9 211.8 808.1 245.1 Q 832.2 278.4 845.6 315.6 Q 859.1 352.8 864.5 391 Z" fill="url(#wash)"/>
+      <ellipse cx="500.6" cy="325.8" rx="82.8" ry="53.8" fill="#F3D49A" opacity="0.45"/>
+      <ellipse cx="445.8" cy="339.6" rx="17.4" ry="9.9" transform="rotate(63 445.8 339.6)" fill="#3A3128"/><ellipse cx="600.1" cy="577.8" rx="17.4" ry="9.9" transform="rotate(38 600.1 577.8)" fill="#3A3128"/><ellipse cx="536.3" cy="546.5" rx="17.4" ry="9.9" transform="rotate(142 536.3 546.5)" fill="#3A3128"/><ellipse cx="545.7" cy="660.6" rx="17.4" ry="9.9" transform="rotate(91 545.7 660.6)" fill="#3A3128"/><ellipse cx="435.1" cy="437.2" rx="17.4" ry="9.9" transform="rotate(139 435.1 437.2)" fill="#3A3128"/><ellipse cx="423.4" cy="530.8" rx="17.4" ry="9.9" transform="rotate(2 423.4 530.8)" fill="#3A3128"/><ellipse cx="398.4" cy="507" rx="17.4" ry="9.9" transform="rotate(115 398.4 507)" fill="#3A3128"/><ellipse cx="702.8" cy="453.1" rx="17.4" ry="9.9" transform="rotate(12 702.8 453.1)" fill="#3A3128"/><ellipse cx="468.2" cy="451.8" rx="17.4" ry="9.9" transform="rotate(129 468.2 451.8)" fill="#3A3128"/>
+    </g>
+</svg>

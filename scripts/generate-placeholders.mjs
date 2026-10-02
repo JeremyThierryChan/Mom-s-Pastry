@@ -94,6 +94,13 @@ const PRESETS = [
     yolk: false,
     sesame: 'white',
   },
+  {
+    file: 'products/custom.svg',
+    w: 1200,
+    h: 900,
+    kind: 'product-whole',
+    title: '定制产品',
+  },
   { file: 'story/xiaoxiao.svg', w: 1200, h: 1200, kind: 'story', title: '笑笑在厨房做糕点' },
   { file: 'journal/first-batch.svg', w: 1600, h: 1000, kind: 'journal', title: '第一炉蛋黄酥' },
   { file: 'journal/lotus.svg', w: 1600, h: 1000, kind: 'journal', title: '炒莲蓉' },
@@ -426,10 +433,10 @@ function blobPath(cx, cy, r, { wobble = 0.045, seed = 3, squash = 0.96, steps = 
  * @param {number} r 半径
  * @param {number} seed 换个数字，形状和芝麻位置就不同
  */
-function whole(cx, cy, r, seed = 5) {
+function whole(cx, cy, r, seed = 5, { dashed = false, seedCount = 9 } = {}) {
   const rand = makeRandom(seed * 977);
   // 黑芝麻：深色小颗粒，比白芝麻小一点
-  const seeds = Array.from({ length: 9 }, () => {
+  const seeds = Array.from({ length: seedCount }, () => {
     const a = rand() * Math.PI * 2;
     const rr = r * (0.24 + rand() * 0.44);
     const x = cx + Math.cos(a) * rr;
@@ -440,7 +447,9 @@ function whole(cx, cy, r, seed = 5) {
 
   return `<g>
       <ellipse cx="${r1(cx)}" cy="${r1(cy + r * 0.95)}" rx="${r1(r * 1.02)}" ry="${r1(r * 0.15)}" fill="#B79B73" opacity="0.17"/>
-      <path d="${blobPath(cx, cy, r, { seed })}" fill="#F2E1BE" stroke="#DFC9A2" stroke-width="${r1(r * 0.022)}"/>
+      <path d="${blobPath(cx, cy, r, { seed })}" fill="#F2E1BE" stroke="#DFC9A2" stroke-width="${r1(r * 0.022)}"${
+        dashed ? ` stroke-dasharray="${r1(r * 0.13)} ${r1(r * 0.085)}"` : ''
+      }/>
       <circle cx="${r1(cx)}" cy="${r1(cy)}" r="${r1(r * 0.86)}" fill="none" stroke="#D9BE8E" stroke-width="${r1(r * 0.035)}" stroke-dasharray="${r1(r * 0.17)} ${r1(r * 0.11)}" opacity="0.9"/>
       <path d="${blobPath(cx - r * 0.03, cy - r * 0.05, r * 0.68, { seed: seed + 2, wobble: 0.06, flat: 0.98 })}" fill="url(#wash)"/>
       <ellipse cx="${r1(cx - r * 0.24)}" cy="${r1(cy - r * 0.3)}" rx="${r1(r * 0.2)}" ry="${r1(r * 0.13)}" fill="#F3D49A" opacity="0.45"/>
@@ -522,7 +531,15 @@ function body(preset) {
     <ellipse cx="${w / 2}" cy="${h * 0.42}" rx="${w * 0.55}" ry="${h * 0.5}" fill="url(#glow)"/>
     ${speckles(w, h, 26, w + h)}`;
 
-  if (kind === 'og') {
+  // 俯视的一整颗：给「定制产品」这类用。剖面图强调里面是什么馅，
+    // 而定制产品没有固定的馅，看整颗更合适；虚线轮廓暗示「还没定型、可以改」。
+    if (kind === 'product-whole') {
+      const R = m * 0.46;
+      return `${bg}
+        ${whole(w / 2, h / 2, R, w + h, { dashed: true })}`;
+    }
+
+    if (kind === 'og') {
     return `${bg}
       <g>
         ${cutaway(w * 0.78, h * 0.86, m * 0.32, filling, cutOpts)}
