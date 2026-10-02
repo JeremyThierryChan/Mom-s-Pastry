@@ -164,10 +164,19 @@ console.log(`✓ public/apple-touch-icon.png  (180×180，${(apple.length / 1024
 
 // 4) 方形分享图：卡片分享时平台会把图裁成方形，用横图会被切掉主体。
 //    留边比图标多一点（0.74），免得平台再裁边时切到酥皮。
-const square = await png(1200, Buffer.from(squareSvg(1200, 0.74)));
+//
+//    尺寸和体积是刻意压小的：微信朋友圈/聊天的分享卡片靠平台自己的爬虫抓图，
+//    超时（几秒）就抓不到，卡片上会显示一个灰色铁链图标。
+//    GitHub Pages 到国内的传输很不稳定（实测同一张 150KB 的图，
+//    三次里有一次 60 秒超时），所以这里只出 800×800 + 调色板 PNG，
+//    体积从 150KB 降到 ~35KB，爬虫才有把握抓到。
+const square = await sharp(Buffer.from(squareSvg(800, 0.74)), { density: 384 })
+  .resize(800, 800, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  .png({ compressionLevel: 9, palette: true, quality: 92, effort: 10 })
+  .toBuffer();
 writeFileSync(resolve(pub, 'images/hero/og-square.png'), square);
 console.log(
-  `✓ public/images/hero/og-square.png  (1200×1200，${(square.length / 1024).toFixed(1)} KB)`,
+  `✓ public/images/hero/og-square.png  (800×800，${(square.length / 1024).toFixed(1)} KB)`,
 );
 
 // 5) 横版分享图：从 og.svg 渲染（保留，有些平台偏爱 1.91:1 的大图卡片）

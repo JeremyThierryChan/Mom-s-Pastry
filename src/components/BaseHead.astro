@@ -35,7 +35,15 @@ const {
 // Astro.site 来自 astro.config.mjs 里的 site，改域名只需要改那一处
 const origin = Astro.site ?? new URL('http://localhost:4321');
 const canonical = new URL(Astro.url.pathname, origin).href;
-const ogImage = absoluteUrl(image, origin.href);
+// 分享图 URL 挂内容哈希。
+//
+// 为什么需要：微信等平台会**按 URL 缓存**抓到的图。上次抓失败（图太大、
+// 爬虫超时）之后，URL 不变它就一直是失败状态，卡片上永远显示灰色铁链。
+// 挂了哈希，图一改 URL 就自动变，平台只能重新抓一次。
+//
+// 外部图片（自带 ?query 的）不动它，免得拼坏。
+const ogImageUrl = absoluteUrl(image, origin.href);
+const ogImage = ogImageUrl.includes('?') ? ogImageUrl : `${ogImageUrl}?v=${fileVersion(image)}`;
 
 // 分享图的类型和尺寸。社交平台不认 SVG，所以分享图必须是 PNG/JPG，
 // 并且带上宽高，平台才知道怎么裁成大卡片（微信、Twitter 都看这个）。
@@ -88,14 +96,22 @@ const ogImageWidth = detected?.width ?? imageWidth;
 const ogImageHeight = detected?.height ?? imageHeight;
 
 /**
- * 图标的缓存比普通资源顽固得多：浏览器把 favicon 存在单独的库里，
- * 普通刷新、甚至关掉标签页重开，都不一定会重新请求，URL 不变就永远用旧的。
- * 所以给图标 URL 挂一个内容哈希 —— 图标文件一改，URL 就变，浏览器只能重新拉。
+ * 取 public 下某个文件的内容哈希，用来给 URL 挂版本号。
+ *
+ * 图标：浏览器把 favicon 存在单独的库里，普通刷新、甚至关掉标签页重开，
+ * 都不一定会重新请求，URL 不变就永远用旧的。
+ *
+ * 分享图：微信等平台同样按 URL 缓存抓到的图，而且**失败也会缓存** ——
+ * 抓失败过一次（比如图太大、爬虫超时），URL 不变就一直是失败状态，
+ * 分享卡片上永远显示灰色铁链。挂上内容哈希，文件一改 URL 就变。
+ *
+ * 注意 file 可能带前导斜杠（内容文件里写的是 /images/…），要先去掉，
+ * 否则 resolve 会把它当绝对路径、读不到文件。
  */
-function iconVersion(file: string): string {
+function fileVersion(file: string): string {
   try {
     return createHash('sha1')
-      .update(readFileSync(resolve(process.cwd(), 'public', file)))
+      .update(readFileSync(resolve(process.cwd(), 'public', file.replace(/^\//, ''))))
       .digest('hex')
       .slice(0, 8);
   } catch {
@@ -103,9 +119,9 @@ function iconVersion(file: string): string {
   }
 }
 
-const icoVersion = iconVersion('favicon.ico');
-const svgVersion = iconVersion('favicon.svg');
-const appleVersion = iconVersion('apple-touch-icon.png');
+const icoVersion = fileVersion('favicon.ico');
+const svgVersion = fileVersion('favicon.svg');
+const appleVersion = fileVersion('apple-touch-icon.png');
 ---
 
 <title>{title}</title>
