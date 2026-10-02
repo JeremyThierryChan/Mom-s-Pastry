@@ -87,6 +87,14 @@ const site = defineCollection({
       /** 「显示：否」时为 false */
       visible: z.boolean(),
     }),
+    /** 顾客反馈：几句真实评价。有真实评价了再填内容 */
+    feedback: z.object({
+      eyebrow: need('顾客反馈 › 小标签'),
+      title: need('顾客反馈 › 标题'),
+      html: z.string(),
+      /** 「显示：否」时为 false */
+      visible: z.boolean(),
+    }),
     about: z.object({
       eyebrow: need('关于笑笑 › 小标签'),
       title: need('关于笑笑 › 标题'),

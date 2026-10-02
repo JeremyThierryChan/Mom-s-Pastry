@@ -1,5 +1,6 @@
 ---
 import AboutSection from '../components/AboutSection.astro';
+import FeedbackSection from '../components/FeedbackSection.astro';
 import BookingSection from '../components/BookingSection.astro';
 import CompareSection from '../components/CompareSection.astro';
 import ContactSection from '../components/ContactSection.astro';
@@ -52,6 +53,9 @@ const jsonLd = {
   {site.booking.visible && <BookingSection booking={site.booking} />}
 
   <AboutSection about={site.about} />
+
+  {/* 顾客反馈放在「关于笑笑」之后：先讲人，再让顾客说话，最后才是联系下单 */}
+  {site.feedback.visible && <FeedbackSection feedback={site.feedback} />}
   {
     site.journal.visible && (
       <section id="journal" class="section border-y border-line bg-sand/50">

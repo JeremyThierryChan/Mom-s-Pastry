@@ -309,6 +309,22 @@
     margin-top: 2.2em;
   }
 
+  /* 顾客评价用的引用块：衬线引言 + 小一号的署名 */
+  .prose-handmade blockquote {
+    margin-block: 1.75rem;
+    border-left: 3px solid var(--color-yolk-soft);
+    padding-left: 1.25rem;
+    font-family: var(--font-serif);
+    color: var(--color-cocoa);
+  }
+
+  .prose-handmade blockquote p + p {
+    margin-top: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: var(--color-clay);
+  }
+
   .prose-handmade strong {
     color: var(--color-ink);
     font-weight: 600;

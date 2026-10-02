@@ -1,0 +1,28 @@
+---
+/**
+ * 顾客反馈。
+ *
+ * 内容来自「网站内容.md › 顾客反馈」，是一段 Markdown 正文，
+ * 每句评价写成引用块，署名跟在后面。
+ * 一句真实评价比十句自夸有用，所以这一节值得留着 ——
+ * 但只有真的收到好评才开（`显示：否` 可以先关着）。
+ */
+import type { SiteContent } from '../lib/content';
+
+interface Props {
+  feedback: SiteContent['feedback'];
+}
+
+const { feedback } = Astro.props;
+---
+
+<section id="feedback" class="section">
+  <div class="wrap">
+    <div class="card mx-auto max-w-3xl px-6 py-10 sm:px-10 sm:py-12">
+      <p class="eyebrow">{feedback.eyebrow}</p>
+      <h2 class="section-title mt-4">{feedback.title}</h2>
+      <!-- 评价来自「网站内容.md › 顾客反馈」，是按 Markdown 渲染好的 -->
+      <div class="prose-handmade mt-6" set:html={feedback.html} />
+    </div>
+  </div>
+</section>

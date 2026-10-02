@@ -273,12 +273,25 @@ export function siteContentLoader(): Loader {
       const raw = await readFile(CONTENT_URL, 'utf8');
       const sections = parseContent(raw, (message) => ctx.logger.warn(message));
 
-      const brand = readSection(sections, '品牌');
+      // 内容里还留着【待填…】占位时给个提醒，
+        // 免得把「待填」这种字样直接发布到线上给顾客看
+        const todo = [...raw.matchAll(/【待填[^】]*】/g)];
+        if (todo.length > 0) {
+          ctx.logger.warn(`内容里还有 ${todo.length} 处【待填】没写完，上线前记得填上：`);
+          for (const m of todo.slice(0, 6)) {
+            const line = raw.slice(0, m.index).split('\n').length;
+            ctx.logger.warn(`  第 ${line} 行：${m[0]}`);
+          }
+          if (todo.length > 6) ctx.logger.warn(`  …… 还有 ${todo.length - 6} 处`);
+        }
+
+        const brand = readSection(sections, '品牌');
       const hero = readSection(sections, '首页');
       const products = readSection(sections, '今日手作');
       const compare = readSection(sections, '对比');
       const booking = readSection(sections, '预订须知');
       const about = readSection(sections, '关于笑笑');
+        const feedback = readSection(sections, '顾客反馈');
       const journal = readSection(sections, '手作记录');
       const contact = readSection(sections, '联系');
       const footer = readSection(sections, '页脚');
@@ -349,6 +362,12 @@ export function siteContentLoader(): Loader {
             image: f(about, '图片'),
             imageAlt: f(about, '图片描述'),
             html: aboutHtml,
+          },
+          feedback: {
+            eyebrow: f(feedback, '小标签'),
+            title: f(feedback, '标题'),
+            html: await renderBody(feedback),
+            visible: toBool(f(feedback, '显示'), true),
           },
           journal: {
             eyebrow: f(journal, '小标签'),
