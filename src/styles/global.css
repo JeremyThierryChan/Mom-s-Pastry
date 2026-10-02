@@ -247,6 +247,28 @@
     font-weight: 600;
   }
 
+  /* 导航栏末尾的行动按钮（联系 · 预订）。
+     配色跟 .btn-primary 一致，但小一号 —— 表头只有 65px 高，
+     用 .btn 那套尺寸（上下各 12px 内边距）会把表头撑高。
+     另外 .btn 是无层级样式，Tailwind 工具类压不过它，
+     所以这里单独写一个类，需要覆盖的（宽度、居中）交给工具类。 */
+  .nav-cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 1rem;
+    border-radius: 9999px;
+    border: 1px solid #d59c22;
+    background-color: var(--color-yolk);
+    color: #45310c;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+  }
+
+  .nav-cta:hover {
+    background-color: #dda01f;
+  }
+
   /* 图片：统一比例容器 + 细边框，替换真实照片时不影响布局。
      高度用 padding-top 撑（老办法），不用 aspect-ratio ——
      aspect-ratio 在**表格单元格**里部分浏览器（尤其 Safari）算不稳，

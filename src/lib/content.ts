@@ -21,6 +21,8 @@ export interface NavLink {
   label: string;
   href: string;
   hash: string;
+  /** 是否渲染成行动按钮（导航栏末尾那个） */
+  cta?: boolean;
 }
 
 /**
@@ -86,9 +88,12 @@ export function navLinks(site: SiteContent): NavLink[] {
     links.push({ label: site.journal.eyebrow, href: '/#journal', hash: '#journal' });
   }
 
-  links.push({ label: site.contact.eyebrow, href: '/#contact', hash: '#contact' });
-  // 预订须知排在最后，跟着首页的位置走（它是页面最后一个区块）
+  // 预订须知在页面最后，导航里也放在文字链接的末尾
   links.push({ label: site.booking.eyebrow, href: '/#booking', hash: '#booking' });
+  // 联系是这一页的最终目的，做成按钮压在导航最右边。
+  // 它比「预订须知」更靠前 —— 按钮放末尾才像 CTA，
+  // 后面再跟一个普通链接会显得别扭。
+  links.push({ label: site.contact.eyebrow, href: '/#contact', hash: '#contact', cta: true });
   return links;
 }
 

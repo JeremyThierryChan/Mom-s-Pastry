@@ -39,7 +39,7 @@ const isJournal = relative.startsWith('journal');
             return (
               <li>
                 <a
-                  class="nav-link"
+                  class={link.cta ? 'nav-cta' : 'nav-link'}
                   href={withBase(link.href)}
                   aria-current={active ? 'true' : undefined}
                 >
@@ -82,7 +82,11 @@ const isJournal = relative.startsWith('journal');
           links.map((link) => (
             <li>
               <a
-                class="block rounded-xl px-3 py-3 text-base text-cocoa hover:bg-sand hover:text-ink"
+                class={
+                    link.cta
+                      ? 'nav-cta w-full justify-center'
+                      : 'block rounded-xl px-3 py-3 text-base text-cocoa hover:bg-sand hover:text-ink'
+                  }
                 href={withBase(link.href)}
               >
                 {link.label}
