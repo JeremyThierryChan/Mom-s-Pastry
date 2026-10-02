@@ -1,0 +1,29 @@
+---
+/**
+ * 打包字体的 @font-face 声明。
+ *
+ * 为什么单独做成组件、而不是写在 global.css 里：
+ * 字体文件在 public/fonts/ 下，URL 必须带上部署的 base（这个站是 /Mom-s-Pastry/）。
+ * 而 CSS 现在是内联进 HTML 的，内联 CSS 里的相对路径会按「页面地址」解析 ——
+ * 首页和记录页的层级不同，同一个相对路径会解析到不同地方。
+ * 所以用 withBase() 算出绝对路径，在这里拼出来。
+ *
+ * 字体文件由 scripts/subset-font.mjs 生成，npm run dev / build 前会自动跑。
+ */
+import { withBase } from '../lib/url';
+
+/** 只用这两个字重：400 给正文里的衬线，600 给标题 */
+const WEIGHTS = [400, 600];
+
+const css = WEIGHTS.map(
+  (weight) => `@font-face{
+  font-family:'Noto Serif SC';
+  font-style:normal;
+  font-weight:${weight};
+  font-display:swap;
+  src:url('${withBase(`/fonts/noto-serif-sc-${weight}.woff2`)}') format('woff2');
+}`,
+).join('\n');
+---
+
+<style is:inline set:html={css}></style>

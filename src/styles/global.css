@@ -22,8 +22,11 @@
   --font-sans:
     'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans SC',
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  /* 'Noto Serif SC' 是打包进网站的字体（见 FontFaces.astro），放在最前面，
+     这样所有设备都用同一份，不再依赖系统里有没有宋体。
+     后面的系统字体只作为兜底：万一某个字不在子集里，也不会显示成方块。 */
   --font-serif:
-    'Songti SC', 'Source Han Serif SC', 'Noto Serif SC', 'Hiragino Mincho ProN', 'SimSun',
+    'Noto Serif SC', 'Songti SC', 'Source Han Serif SC', 'Hiragino Mincho ProN', 'SimSun',
     ui-serif, Georgia, 'Times New Roman', serif;
 
   --radius-card: 1.25rem;

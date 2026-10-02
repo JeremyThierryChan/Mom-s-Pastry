@@ -5,16 +5,18 @@
   "type": "module",
   "description": "笑笑的蛋黄酥 — 妈妈退休后的手作小铺（静态品牌网站 MVP）",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "node scripts/subset-font.mjs && astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/subset-font.mjs && astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "fonts": "node scripts/subset-font.mjs",
     "placeholders": "node scripts/generate-placeholders.mjs",
-    "astro": "astro",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "astro": "astro"
   },
   "dependencies": {
+    "@fontsource/noto-serif-sc": "^5.3.0",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.5",
     "tailwindcss": "^4.3.3"
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@types/node": "^26.6.3",
+    "subset-font": "^2.9.0",
     "typescript": "^5.9.3"
   }
 }
